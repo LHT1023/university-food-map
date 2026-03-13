@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>吃什么 · 大学城美食地图</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #FF6B35;
+    --primary-light: #FF8F65;
+    --primary-dark: #E55A25;
+    --secondary: #2EC4B6;
+    --secondary-light: #5DD9CE;
+    --accent: #FFBE0B;
+    --bg: #FFF8F0;
+    --bg-card: #FFFFFF;
+    --bg-dark: #1A1A2E;
+    --text: #2D2D3A;
+    --text-light: #6B6B80;
+    --text-muted: #9B9BAF;
+    --border: #F0EBE3;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+    --shadow-glow: 0 4px 30px rgba(255,107,53,0.15);
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+
+  /* ===== HEADER ===== */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,248,240,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 22px;
+    color: var(--primary);
+    cursor: pointer;
+    user-select: none;
+  }
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    background: #F5F0E8;
+    padding: 4px;
+    border-radius: 14px;
+  }
+  .nav-tab {
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    white-space: nowrap;
+  }
+  .nav-tab.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-tab:hover:not(.active) {
+    color: var(--text);
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: #F5F0E8;
+    border-radius: 12px;
+    padding: 8px 14px;
+    gap: 8px;
+    width: 220px;
+    transition: all 0.3s ease;
+  }
+  .search-box:focus-within {
+    background: white;
+    box-shadow: 0 0 0 2px var(--primary-light);
+    width: 280px;
+  }
+  .search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    width: 100%;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .search-box input::placeholder { color: var(--text-muted); }
+  .avatar-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(46,196,182,0.3);
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 20px;
+    position: relative;
+  }
+  .hero-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .hero h1 {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 42px;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .hero h1 span { color: var(--primary); }
+  .hero p {
+    font-size: 16px;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  /* Random Pick Button */
+  .random-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-glow);
+    transition: all 0.3s ease;
+    font-family: inherit;
+    animation: pulse-glow 2s infinite;
+  }
+  .random-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 35px rgba(255,107,53,0.3);
+  }
+  .random-btn:active { transform: scale(0.98); }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 4px 30px rgba(255,107,53,0.15); }
+    50% { box-shadow: 0 4px 30px rgba(255,107,53,0.35); }
+  }
+
+  /* ===== STATS BAR ===== */
+  .stats-bar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: white;
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--text-light);
+    border: 1px solid var(--border);
+  }
+  .stat-chip .num {
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  /* ===== UNIVERSITY TABS ===== */
+  .uni-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 16px;
+  }
+  .uni-tabs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .uni-tabs::-webkit-scrollbar { display: none; }
+  .uni-tab {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border);
+    background: white;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-light);
+    font-family: inherit;
+  }
+  .uni-tab.active {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(255,107,53,0.08), rgba(255,190,11,0.05));
+    color: var(--primary);
+  }
+  .uni-tab:hover:not(.active) {
+    border-color: var(--primary-light);
+    color: var(--text);
+  }
+  .uni-tab .uni-emoji { font-size: 18px; }
+
+  /* ===== FILTER BAR ===== */
+  .filter-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 20px;
+  }
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .filter-chip.active {
+    border-color: var(--primary);
+    background: rgba(255,107,53,0.08);
+    color: var(--primary);
+  }
+  .filter-chip:hover:not(.active) {
+    border-color: #ddd;
+    color: var(--text);
+  }
+  .filter-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+  .sort-btn {
+    margin-left: auto;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--text-light);
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+  }
+  .sort-btn:hover { border-color: #ddd; color: var(--text); }
+
+  /* ===== MAIN CONTENT ===== */
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 40px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ===== RESTAURANT GRID ===== */
+  .restaurant-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .restaurant-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .restaurant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+  }
+  .card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-img-placeholder {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+  }
+  .card-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    backdrop-filter: blur(8px);
+    z-index: 2;
+  }
+  .badge-hot {
+    background: rgba(255,107,53,0.9);
+    color: white;
+  }
+  .badge-new {
+    background: rgba(46,196,182,0.9);
+    color: white;
+  }
+  .badge-cheap {
+    background: rgba(255,190,11,0.9);
+    color: var(--text);
+  }
+  .card-fav {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 2;
+    border: none;
+    transition: all 0.2s ease;
+  }
+  .card-fav:hover { transform: scale(1.15); }
+  .card-fav.active { background: rgba(255,107,53,0.15); }
+  .card-body {
+    padding: 14px 16px 16px;
+  }
+  .card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .card-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    flex: 1;
+    margin-right: 8px;
+  }
+  .card-rating {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .card-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #F5F0E8;
+    color: var(--text-light);
+  }
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .card-price {
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 14px;
+  }
+  .card-price span {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  /* ===== MAP PANEL ===== */
+  .map-panel {
+    position: sticky;
+    top: 88px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+  }
+  .map-container {
+    width: 100%;
+    height: 380px;
+    background: linear-gradient(145deg, #E8F4E8, #D4E8D4);
+    position: relative;
+    overflow: hidden;
+  }
+  /* Simple illustrated map */
+  .map-bg {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .map-road {
+    position: absolute;
+    background: rgba(255,255,255,0.7);
+    border-radius: 2px;
+  }
+  .map-road.h {
+    height: 3px;
+    left: 0;
+    right: 0;
+  }
+  .map-road.v {
+    width: 3px;
+    top: 0;
+    bottom: 0;
+  }
+  .map-pin {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 5;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .map-pin span {
+    transform: rotate(45deg);
+    font-size: 11px;
+  }
+  .map-pin:hover {
+    transform: rotate(-45deg) scale(1.3);
+    z-index: 10;
+  }
+  .map-pin.active {
+    transform: rotate(-45deg) scale(1.4);
+    z-index: 10;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .map-uni-label {
+    position: absolute;
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    z-index: 3;
+    box-shadow: var(--shadow-sm);
+  }
+  .map-legend {
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  /* ===== DETAIL PANEL (overlay) ===== */
+  .detail-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+  .detail-overlay.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .detail-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    width: 90%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+    position: relative;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .detail-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(4px);
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: all 0.2s;
+  }
+  .detail-close:hover { background: white; transform: scale(1.1); }
+  .detail-img {
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    position: relative;
+  }
+  .detail-body {
+    padding: 24px;
+  }
+  .detail-name {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+  .detail-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .detail-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .detail-reviews {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .detail-price-tag {
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: rgba(255,107,53,0.1);
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .detail-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .detail-info-item {
+    padding: 12px;
+    background: #FAF7F2;
+    border-radius: var(--radius-sm);
+  }
+  .detail-info-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .detail-info-value {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .detail-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .detail-reco-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .reco-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #FAF7F2;
+    border-radius: var(--radius-sm);
+  }
+  .reco-name {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .reco-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(255,190,11,0.2);
+    color: #B8860B;
+    font-weight: 600;
+  }
+  .detail-reviews-section { margin-bottom: 10px; }
+  .review-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .review-user {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .review-date {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .review-stars {
+    color: var(--accent);
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  .review-text {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+
+  /* ===== RANDOM MODAL ===== */
+  .random-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+  }
+  .random-overlay.show { display: flex; }
+  .random-modal {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease;
+  }
+  .random-emoji {
+    font-size: 72px;
+    margin-bottom: 16px;
+    animation: bounce 0.6s ease;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-20px); }
+    60% { transform: translateY(-10px); }
+  }
+  .random-title {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 26px;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .random-subtitle {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+  }
+  .random-info {
+    text-align: left;
+    padding: 16px;
+    background: #FAF7F2;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+  }
+  .random-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 14px;
+  }
+  .random-info-label { color: var(--text-muted); }
+  .random-info-value { font-weight: 600; }
+  .random-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .random-actions button {
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.2s ease;
+  }
+  .btn-retry {
+    background: #F5F0E8;
+    color: var(--text);
+  }
+  .btn-retry:hover { background: #EDE7DD; }
+  .btn-go {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: var(--shadow-glow);
+  }
+  .btn-go:hover { transform: translateY(-1px); }
+  .btn-close-random {
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    padding: 30px 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .main {
+      grid-template-columns: 1fr;
+    }
+    .map-panel { position: relative; top: 0; order: -1; }
+    .restaurant-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: 32px; }
+    .search-box { width: 180px; }
+    .search-box:focus-within { width: 200px; }
+  }
+  @media (max-width: 600px) {
+    .restaurant-grid { grid-template-columns: 1fr; }
+    .header-inner { height: 56px; }
+    .nav-tabs { display: none; }
+    .hero h1 { font-size: 28px; }
+    .hero { padding: 24px 16px 16px; }
+    .main { padding: 0 16px 30px; }
+    .filter-section, .uni-section, .stats-bar { padding-left: 16px; padding-right: 16px; }
+    .search-box { width: 140px; }
+  }
+
+  /* ===== ANIMATIONS ===== */
+  .card-enter {
+    animation: cardEnter 0.4s ease forwards;
+    opacity: 0;
+  }
+  @keyframes cardEnter {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Spinning animation for random */
+  .spinning .random-emoji {
+    animation: spin-bounce 0.4s ease;
+  }
+  @keyframes spin-bounce {
+    0% { transform: scale(0.5) rotate(-30deg); opacity: 0; }
+    60% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo" onclick="goHome()">
+      <div class="logo-icon">🍜</div>
+      <span>吃什么</span>
+    </div>
+    <div class="nav-tabs" id="navTabs">
+      <button class="nav-tab active" data-tab="explore">发现美食</button>
+      <button class="nav-tab" data-tab="ranking">热门榜单</button>
+      <button class="nav-tab" data-tab="favorites">我的收藏</button>
+    </div>
+    <div class="header-actions">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" placeholder="搜索餐厅、菜系..." id="searchInput" oninput="handleSearch()">
+      </div>
+      <button class="avatar-btn" title="个人中心">H</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>今天<span>吃什么</span>？</h1>
+    <p>覆盖 5 所高校周边 200+ 餐饮商户，让每一顿都不纠结</p>
+    <button class="random-btn" onclick="randomPick()">
+      🎲 帮我决定！
+    </button>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-chip"><span class="num">238</span> 家餐厅</div>
+  <div class="stat-chip"><span class="num">5</span> 所高校</div>
+  <div class="stat-chip"><span class="num">12</span> 种菜系</div>
+  <div class="stat-chip"><span class="num">1.2w+</span> 条点评</div>
+</div>
+
+<!-- UNIVERSITY TABS -->
+<section class="uni-section">
+  <div class="uni-tabs" id="uniTabs">
+    <button class="uni-tab active" data-uni="all">
+      <span class="uni-emoji">🏫</span> 全部高校
+    </button>
+    <button class="uni-tab" data-uni="huaxia">
+      <span class="uni-emoji">🏛️</span> 华夏大学
+    </button>
+    <button class="uni-tab" data-uni="mingde">
+      <span class="uni-emoji">📚</span> 明德大学
+    </button>
+    <button class="uni-tab" data-uni="keji">
+      <span class="uni-emoji">🔬</span> 科技学院
+    </button>
+    <button class="uni-tab" data-uni="yishu">
+      <span class="uni-emoji">🎨</span> 艺术学院
+    </button>
+    <button class="uni-tab" data-uni="shifan">
+      <span class="uni-emoji">✏️</span> 师范大学
+    </button>
+  </div>
+</section>
+
+<!-- FILTER -->
+<section class="filter-section">
+  <div class="filter-row" id="filterRow">
+    <button class="filter-chip active" data-cuisine="all">全部</button>
+    <button class="filter-chip" data-cuisine="chinese">中餐</button>
+    <button class="filter-chip" data-cuisine="noodle">面食</button>
+    <button class="filter-chip" data-cuisine="hotpot">火锅</button>
+    <button class="filter-chip" data-cuisine="bbq">烧烤</button>
+    <button class="filter-chip" data-cuisine="japanese">日料</button>
+    <button class="filter-chip" data-cuisine="korean">韩餐</button>
+    <button class="filter-chip" data-cuisine="western">西餐</button>
+    <button class="filter-chip" data-cuisine="dessert">甜品饮品</button>
+    <button class="filter-chip" data-cuisine="fastfood">快餐简餐</button>
+    <div class="filter-divider"></div>
+    <button class="filter-chip" data-price="cheap">💰 15元以下</button>
+    <button class="filter-chip" data-price="mid">💰 15-30元</button>
+    <button class="filter-chip" data-price="high">💰 30元以上</button>
+    <button class="sort-btn" id="sortBtn" onclick="toggleSort()">
+      <span id="sortIcon">↕️</span> <span id="sortText">综合排序</span>
+    </button>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="restaurant-grid" id="restaurantGrid"></div>
+
+  <!-- MAP -->
+  <aside class="map-panel">
+    <div class="map-container" id="mapContainer"></div>
+    <div class="map-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div> 中餐</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--secondary)"></div> 日韩料理</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div> 西餐甜品</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#9B59B6"></div> 其他</div>
+    </div>
+  </aside>
+</main>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="detail-card" id="detailCard"></div>
+</div>
+
+<!-- RANDOM OVERLAY -->
+<div class="random-overlay" id="randomOverlay" onclick="closeRandom(event)">
+  <div class="random-modal" id="randomModal"></div>
+</div>
+
+<footer class="footer">
+  「吃什么」大学城美食地图 · 让每一顿都值得期待 ❤️
+</footer>
+
+<script>
+// ===== DATA =====
+const restaurants = [
+  {
+    id: 1, name: "张记兰州拉面", cuisine: "noodle", uni: "huaxia",
+    rating: 4.7, reviews: 326, price: 15, badge: "hot",
+    emoji: "🍜", bg: "linear-gradient(135deg,#FFE5B4,#FFD080)",
+    distance: "120m", time: "06:30-22:00", address: "华夏大学南门美食街A12号",
+    tags: ["拉面", "盖浇饭", "清真"],
+    recommended: [{name:"牛肉拉面",tag:"必点"},{name:"牛肉盖浇饭",tag:"实惠"},{name:"凉皮",tag:"夏日"}],
+    reviewList: [
+      {user:"小明同学",date:"3天前",stars:5,text:"面条劲道，汤头浓郁，牛肉给得很大方。中午来经常要排队！"},
+      {user:"吃货少女",date:"1周前",stars:4,text:"性价比之王，一碗面15块吃到撑。就是夏天空调不太够。"},
+      {user:"路过的猫",date:"2周前",stars:5,text:"从大一吃到大四，味道一直很稳定，老板人也好。"}
+    ],
+    mapX: 25, mapY: 35
+  },
+  {
+    id: 2, name: "小肥羊火锅", cuisine: "hotpot", uni: "huaxia",
+    rating: 4.5, reviews: 512, price: 68, badge: "hot",
+    emoji: "🍲", bg: "linear-gradient(135deg,#FFD4D4,#FF9B9B)",
+    distance: "300m", time: "11:00-02:00", address: "华夏大学西门商业街B8号",
+    tags: ["火锅", "涮肉", "聚餐"],
+    recommended: [{name:"麻辣鸳鸯锅",tag:"招牌"},{name:"手切羊肉卷",tag:"必点"},{name:"红糖糍粑",tag:"甜品"}],
+    reviewList: [
+      {user:"火锅达人",date:"2天前",stars:5,text:"锅底很正宗，毛肚鲜嫩！适合朋友聚餐，人均60左右。"},
+      {user:"数学系小李",date:"5天前",stars:4,text:"味道不错就是有点贵，等位时间太长了，建议提前预约。"}
+    ],
+    mapX: 15, mapY: 25
+  },
+  {
+    id: 3, name: "一风堂拉面", cuisine: "japanese", uni: "mingde",
+    rating: 4.6, reviews: 218, price: 45, badge: null,
+    emoji: "🍱", bg: "linear-gradient(135deg,#E8D4F0,#C4A0D8)",
+    distance: "450m", time: "11:00-21:30", address: "明德大学东门学府路18号",
+    tags: ["日式拉面", "定食", "日料"],
+    recommended: [{name:"豚骨拉面",tag:"招牌"},{name:"炸鸡定食",tag:"超大份"},{name:"抹茶冰淇淋",tag:"好评"}],
+    reviewList: [
+      {user:"日料爱好者",date:"1天前",stars:5,text:"汤底醇厚，叉烧入口即化，是我喝过最好的豚骨汤！"},
+      {user:"考研选手",date:"1周前",stars:4,text:"环境很安静适合一个人来，就是等餐时间稍长。"}
+    ],
+    mapX: 55, mapY: 20
+  },
+  {
+    id: 4, name: "首尔炸鸡", cuisine: "korean", uni: "mingde",
+    rating: 4.4, reviews: 189, price: 35, badge: "new",
+    emoji: "🍗", bg: "linear-gradient(135deg,#FFF3CD,#FFE082)",
+    distance: "200m", time: "11:00-23:00", address: "明德大学北门创业街C5号",
+    tags: ["韩式炸鸡", "啤酒", "年糕"],
+    recommended: [{name:"蜂蜜芥末炸鸡",tag:"招牌"},{name:"芝士年糕",tag:"好评"},{name:"部队火锅",tag:"聚餐"}],
+    reviewList: [
+      {user:"炸鸡狂魔",date:"3天前",stars:5,text:"炸鸡外酥里嫩！蜂蜜芥末味绝了，每周必来一次。"},
+      {user:"明德小赵",date:"6天前",stars:4,text:"配啤酒看球赛超爽，就是晚上人太多了。"}
+    ],
+    mapX: 60, mapY: 40
+  },
+  {
+    id: 5, name: "老王烧烤", cuisine: "bbq", uni: "keji",
+    rating: 4.8, reviews: 623, price: 50, badge: "hot",
+    emoji: "🍖", bg: "linear-gradient(135deg,#FFE0C0,#FFB870)",
+    distance: "180m", time: "17:00-03:00", address: "科技学院南门夜市街D3号",
+    tags: ["烧烤", "夜宵", "啤酒"],
+    recommended: [{name:"烤羊肉串",tag:"招牌"},{name:"烤生蚝",tag:"必吃"},{name:"烤茄子",tag:"素食"}],
+    reviewList: [
+      {user:"夜猫子",date:"1天前",stars:5,text:"深夜食堂！串儿大料足，老板烤功一绝，3年没变过味道。"},
+      {user:"CS专业小张",date:"4天前",stars:5,text:"考完试来撸串是传统，人均50吃到扶墙出。"}
+    ],
+    mapX: 35, mapY: 60
+  },
+  {
+    id: 6, name: "沙县小吃", cuisine: "fastfood", uni: "keji",
+    rating: 4.2, reviews: 856, price: 12, badge: "cheap",
+    emoji: "🥟", bg: "linear-gradient(135deg,#E0F0E0,#B8D8B8)",
+    distance: "50m", time: "07:00-22:00", address: "科技学院东门1号",
+    tags: ["快餐", "小吃", "实惠"],
+    recommended: [{name:"蒸饺+拌面套餐",tag:"经典"},{name:"炖罐",tag:"滋补"},{name:"卤蛋",tag:"1元"}],
+    reviewList: [
+      {user:"省钱达人",date:"2天前",stars:4,text:"穷学生的救命恩人！一顿12块管饱，味道也不差。"},
+      {user:"每天都来的人",date:"3天前",stars:5,text:"蒸饺拌面永远的神！又快又便宜又好吃。"}
+    ],
+    mapX: 42, mapY: 55
+  },
+  {
+    id: 7, name: "星空咖啡甜品", cuisine: "dessert", uni: "yishu",
+    rating: 4.6, reviews: 234, price: 28, badge: "new",
+    emoji: "🍰", bg: "linear-gradient(135deg,#F0E0F0,#E0C0E8)",
+    distance: "350m", time: "10:00-22:00", address: "艺术学院创意园区F2号",
+    tags: ["咖啡", "蛋糕", "自习"],
+    recommended: [{name:"提拉米苏",tag:"招牌"},{name:"燕麦拿铁",tag:"好评"},{name:"草莓千层",tag:"季节限定"}],
+    reviewList: [
+      {user:"文艺青年",date:"1天前",stars:5,text:"环境超美！适合约会和自习，咖啡做得也很用心。"},
+      {user:"甜品控",date:"5天前",stars:4,text:"提拉米苏确实好吃，价格在学校周边算中等。"}
+    ],
+    mapX: 75, mapY: 30
+  },
+  {
+    id: 8, name: "杨记黄焖鸡", cuisine: "chinese", uni: "shifan",
+    rating: 4.3, reviews: 445, price: 18, badge: null,
+    emoji: "🐔", bg: "linear-gradient(135deg,#FFF0D0,#FFE0A0)",
+    distance: "100m", time: "10:30-21:00", address: "师范大学正门美食广场G7号",
+    tags: ["黄焖鸡", "米饭", "实惠"],
+    recommended: [{name:"黄焖鸡米饭(大份)",tag:"招牌"},{name:"黄焖排骨",tag:"新品"},{name:"酸梅汤",tag:"解腻"}],
+    reviewList: [
+      {user:"师范大一新生",date:"2天前",stars:4,text:"便宜好吃！大份18块鸡肉给得很足，米饭免费续。"},
+      {user:"常客老王",date:"1周前",stars:4,text:"一周至少吃三次，微辣最好吃。就是土豆可以再多点。"}
+    ],
+    mapX: 20, mapY: 75
+  },
+  {
+    id: 9, name: "觅·西餐厅", cuisine: "western", uni: "yishu",
+    rating: 4.5, reviews: 167, price: 55, badge: null,
+    emoji: "🥩", bg: "linear-gradient(135deg,#D4E4F0,#A8C8E0)",
+    distance: "500m", time: "11:00-21:30", address: "艺术学院西门文创街H3号",
+    tags: ["西餐", "牛排", "意面"],
+    recommended: [{name:"菲力牛排",tag:"招牌"},{name:"奶油蘑菇意面",tag:"好评"},{name:"焦糖布丁",tag:"甜品"}],
+    reviewList: [
+      {user:"约会小助手",date:"3天前",stars:5,text:"学校周边最有氛围感的西餐厅！牛排5分熟刚好。"},
+      {user:"艺术系学姐",date:"1周前",stars:4,text:"环境和味道都在线，就是分量对男生来说偏小。"}
+    ],
+    mapX: 70, mapY: 50
+  },
+  {
+    id: 10, name: "川味小馆", cuisine: "chinese", uni: "shifan",
+    rating: 4.7, reviews: 389, price: 25, badge: "hot",
+    emoji: "🌶️", bg: "linear-gradient(135deg,#FFD4D0,#FFA0A0)",
+    distance: "250m", time: "10:00-22:00", address: "师范大学北门学生街I5号",
+    tags: ["川菜", "麻辣", "下饭"],
+    recommended: [{name:"水煮鱼",tag:"招牌"},{name:"麻婆豆腐",tag:"经典"},{name:"酸辣粉",tag:"人气"}],
+    reviewList: [
+      {user:"无辣不欢",date:"1天前",stars:5,text:"正宗川味！水煮鱼麻辣鲜香，一个人也能点小份。"},
+      {user:"考研组队伙伴",date:"4天前",stars:5,text:"压力大的时候就来吃顿辣的，瞬间满血复活。"}
+    ],
+    mapX: 28, mapY: 70
+  },
+  {
+    id: 11, name: "茶百道", cuisine: "dessert", uni: "huaxia",
+    rating: 4.3, reviews: 712, price: 16, badge: null,
+    emoji: "🧋", bg: "linear-gradient(135deg,#E0F8E8,#A8E0C0)",
+    distance: "80m", time: "09:00-23:00", address: "华夏大学南门综合楼1层",
+    tags: ["奶茶", "果茶", "外卖"],
+    recommended: [{name:"杨枝甘露",tag:"招牌"},{name:"西瓜啵啵",tag:"夏日"},{name:"芋泥波波奶茶",tag:"人气"}],
+    reviewList: [
+      {user:"奶茶续命",date:"1天前",stars:4,text:"一周三杯起步，杨枝甘露yyds！外卖也很快。"},
+      {user:"健身打卡中",date:"3天前",stars:3,text:"好喝是好喝，但含糖量有点高…我每次选三分糖。"}
+    ],
+    mapX: 22, mapY: 42
+  },
+  {
+    id: 12, name: "鱼你相遇酸菜鱼", cuisine: "chinese", uni: "keji",
+    rating: 4.6, reviews: 298, price: 32, badge: null,
+    emoji: "🐟", bg: "linear-gradient(135deg,#D4F0F0,#A0D8D8)",
+    distance: "280m", time: "10:30-21:30", address: "科技学院西门创新路K2号",
+    tags: ["酸菜鱼", "米饭", "下饭"],
+    recommended: [{name:"金汤酸菜鱼",tag:"招牌"},{name:"藤椒鱼",tag:"新品"},{name:"红糖糍粑",tag:"饭后"}],
+    reviewList: [
+      {user:"鱼片爱好者",date:"2天前",stars:5,text:"鱼片又嫩又大块！金汤底酸辣开胃，一个人吃小份刚好。"},
+      {user:"实验室同僚",date:"5天前",stars:4,text:"做完实验来一碗超满足，就是中午排队有点久。"}
+    ],
+    mapX: 30, mapY: 50
+  }
+];
+
+// ===== STATE =====
+let currentUni = 'all';
+let currentCuisine = 'all';
+let currentPrice = null;
+let currentSort = 'default'; // default, rating, price-asc, price-desc
+let searchQuery = '';
+let favorites = new Set();
+let currentTab = 'explore';
+
+// ===== RENDER FUNCTIONS =====
+
+function getFilteredRestaurants() {
+  let filtered = [...restaurants];
+
+  // Tab filter
+  if (currentTab === 'favorites') {
+    filtered = filtered.filter(r => favorites.has(r.id));
+  }
+  if (currentTab === 'ranking') {
+    filtered = [...restaurants].sort((a, b) => b.rating - a.rating || b.reviews - a.reviews);
+  }
+
+  // Uni filter
+  if (currentUni !== 'all') {
+    filtered = filtered.filter(r => r.uni === currentUni);
+  }
+
+  // Cuisine filter
+  if (currentCuisine !== 'all') {
+    filtered = filtered.filter(r => r.cuisine === currentCuisine);
+  }
+
+  // Price filter
+  if (currentPrice === 'cheap') filtered = filtered.filter(r => r.price <= 15);
+  else if (currentPrice === 'mid') filtered = filtered.filter(r => r.price > 15 && r.price <= 30);
+  else if (currentPrice === 'high') filtered = filtered.filter(r => r.price > 30);
+
+  // Search
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    filtered = filtered.filter(r =>
+      r.name.toLowerCase().includes(q) ||
+      r.tags.some(t => t.toLowerCase().includes(q)) ||
+      r.cuisine.includes(q)
+    );
+  }
+
+  // Sort
+  if (currentSort === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+  else if (currentSort === 'price-asc') filtered.sort((a, b) => a.price - b.price);
+  else if (currentSort === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+  else if (currentSort === 'reviews') filtered.sort((a, b) => b.reviews - a.reviews);
+
+  return filtered;
+}
+
+function renderCards() {
+  const grid = document.getElementById('restaurantGrid');
+  const filtered = getFilteredRestaurants();
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
+        <div style="font-size:48px;margin-bottom:12px;">🔍</div>
+        <div style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">没有找到餐厅</div>
+        <div style="font-size:14px;color:var(--text-muted);">换个筛选条件试试？</div>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((r, i) => `
+    <div class="restaurant-card card-enter" style="animation-delay:${i * 0.06}s" onclick="openDetail(${r.id})">
+      ${r.badge ? `<div class="card-badge badge-${r.badge}">${r.badge === 'hot' ? '🔥 人气' : r.badge === 'new' ? '✨ 新店' : '💰 平价'}</div>` : ''}
+      <button class="card-fav ${favorites.has(r.id) ? 'active' : ''}" onclick="event.stopPropagation();toggleFav(${r.id})">
+        ${favorites.has(r.id) ? '❤️' : '🤍'}
+      </button>
+      <div class="card-img-placeholder" style="background:${r.bg}">${r.emoji}</div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div class="card-name">${r.name}</div>
+          <div class="card-rating">⭐ ${r.rating}</div>
+        </div>
+        <div class="card-tags">
+          ${r.tags.map(t => `<span class="card-tag">${t}</span>`).join('')}
+        </div>
+        <div class="card-meta">
+          <div class="card-price">¥${r.price}<span>/人</span></div>
+          <div>📍 ${r.distance}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderMap() {
+  const map = document.getElementById('mapContainer');
+  const filtered = getFilteredRestaurants();
+
+  const pinColor = (cuisine) => {
+    if (['chinese','noodle','hotpot','bbq','fastfood'].includes(cuisine)) return 'var(--primary)';
+    if (['japanese','korean'].includes(cuisine)) return 'var(--secondary)';
+    if (['western','dessert'].includes(cuisine)) return 'var(--accent)';
+    return '#9B59B6';
+  };
+
+  map.innerHTML = `
+    <div class="map-bg">
+      <!-- Roads -->
+      <div class="map-road h" style="top:30%"></div>
+      <div class="map-road h" style="top:55%"></div>
+      <div class="map-road h" style="top:80%"></div>
+      <div class="map-road v" style="left:20%"></div>
+      <div class="map-road v" style="left:45%"></div>
+      <div class="map-road v" style="left:70%"></div>
+
+      <!-- Uni Labels -->
+      <div class="map-uni-label" style="top:15%;left:10%">🏛️ 华夏大学</div>
+      <div class="map-uni-label" style="top:10%;left:50%">📚 明德大学</div>
+      <div class="map-uni-label" style="top:48%;left:30%">🔬 科技学院</div>
+      <div class="map-uni-label" style="top:22%;left:72%">🎨 艺术学院</div>
+      <div class="map-uni-label" style="top:68%;left:12%">✏️ 师范大学</div>
+
+      <!-- Pins -->
+      ${filtered.map(r => `
+        <div class="map-pin" style="left:${r.mapX}%;top:${r.mapY}%;background:${pinColor(r.cuisine)}"
+             onclick="openDetail(${r.id})" title="${r.name}">
+          <span>${r.emoji}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ===== DETAIL =====
+function openDetail(id) {
+  const r = restaurants.find(x => x.id === id);
+  if (!r) return;
+  const card = document.getElementById('detailCard');
+  const uniNames = { huaxia: '华夏大学', mingde: '明德大学', keji: '科技学院', yishu: '艺术学院', shifan: '师范大学' };
+
+  card.innerHTML = `
+    <button class="detail-close" onclick="document.getElementById('detailOverlay').classList.remove('show')">✕</button>
+    <div class="detail-img" style="background:${r.bg}">${r.emoji}</div>
+    <div class="detail-body">
+      <div class="detail-name">${r.name}</div>
+      <div class="detail-rating-row">
+        <div class="detail-rating">⭐ ${r.rating}</div>
+        <div class="detail-reviews">${r.reviews} 条评价</div>
+        <div class="detail-price-tag">¥${r.price}/人</div>
+      </div>
+      <div class="detail-info-grid">
+        <div class="detail-info-item">
+          <div class="detail-info-label">📍 地址</div>
+          <div class="detail-info-value">${r.address}</div>
+        </div>
+        <div class="detail-info-item">
+          <div class="detail-info-label">🕐 营业时间</div>
+          <div class="detail-info-value">${r.time}</div>
+        </div>
+        <div class="detail-info-item">
+          <div class="detail-info-label">🏫 所属高校</div>
+          <div class="detail-info-value">${uniNames[r.uni]}</div>
+        </div>
+        <div class="detail-info-item">
+          <div class="detail-info-label">📏 距离</div>
+          <div class="detail-info-value">${r.distance}</div>
+        </div>
+      </div>
+
+      <div class="detail-section-title">🍽️ 推荐菜品</div>
+      <div class="detail-reco-list">
+        ${r.recommended.map(item => `
+          <div class="reco-item">
+            <span class="reco-name">${item.name}</span>
+            <span class="reco-tag">${item.tag}</span>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="detail-section-title">💬 学生点评</div>
+      <div class="detail-reviews-section">
+        ${r.reviewList.map(rv => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-user">${rv.user}</span>
+              <span class="review-date">${rv.date}</span>
+            </div>
+            <div class="review-stars">${'⭐'.repeat(rv.stars)}</div>
+            <div class="review-text">${rv.text}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('detailOverlay').classList.add('show');
+}
+
+function closeDetail(e) {
+  if (e.target === document.getElementById('detailOverlay')) {
+    document.getElementById('detailOverlay').classList.remove('show');
+  }
+}
+
+// ===== RANDOM PICK =====
+function randomPick() {
+  const pool = getFilteredRestaurants();
+  if (pool.length === 0) return;
+  const r = pool[Math.floor(Math.random() * pool.length)];
+  const uniNames = { huaxia: '华夏大学', mingde: '明德大学', keji: '科技学院', yishu: '艺术学院', shifan: '师范大学' };
+
+  const modal = document.getElementById('randomModal');
+  modal.classList.add('spinning');
+  modal.innerHTML = `
+    <div class="random-emoji">${r.emoji}</div>
+    <div class="random-title">${r.name}</div>
+    <div class="random-subtitle">就决定是你了！</div>
+    <div class="random-info">
+      <div class="random-info-row">
+        <span class="random-info-label">人均</span>
+        <span class="random-info-value">¥${r.price}</span>
+      </div>
+      <div class="random-info-row">
+        <span class="random-info-label">评分</span>
+        <span class="random-info-value">⭐ ${r.rating}（${r.reviews}条）</span>
+      </div>
+      <div class="random-info-row">
+        <span class="random-info-label">距离</span>
+        <span class="random-info-value">${r.distance}</span>
+      </div>
+      <div class="random-info-row">
+        <span class="random-info-label">所属高校</span>
+        <span class="random-info-value">${uniNames[r.uni]}</span>
+      </div>
+    </div>
+    <div class="random-actions">
+      <button class="btn-retry" onclick="randomPick()">🎲 再来一次</button>
+      <button class="btn-go" onclick="document.getElementById('randomOverlay').classList.remove('show');openDetail(${r.id})">查看详情 →</button>
+    </div>
+    <div style="margin-top:10px">
+      <button class="btn-close-random" onclick="document.getElementById('randomOverlay').classList.remove('show')">算了我再看看</button>
+    </div>
+  `;
+  setTimeout(() => modal.classList.remove('spinning'), 600);
+  document.getElementById('randomOverlay').classList.add('show');
+}
+
+function closeRandom(e) {
+  if (e.target === document.getElementById('randomOverlay')) {
+    document.getElementById('randomOverlay').classList.remove('show');
+  }
+}
+
+// ===== FAVORITES =====
+function toggleFav(id) {
+  if (favorites.has(id)) favorites.delete(id);
+  else favorites.add(id);
+  renderCards();
+}
+
+// ===== SEARCH =====
+function handleSearch() {
+  searchQuery = document.getElementById('searchInput').value.trim();
+  renderCards();
+  renderMap();
+}
+
+// ===== SORT =====
+const sortModes = ['default', 'rating', 'reviews', 'price-asc', 'price-desc'];
+const sortLabels = { default: '综合排序', rating: '评分最高', reviews: '评价最多', 'price-asc': '价格最低', 'price-desc': '价格最高' };
+let sortIndex = 0;
+function toggleSort() {
+  sortIndex = (sortIndex + 1) % sortModes.length;
+  currentSort = sortModes[sortIndex];
+  document.getElementById('sortText').textContent = sortLabels[currentSort];
+  renderCards();
+}
+
+// ===== EVENT BINDINGS =====
+function goHome() {
+  currentTab = 'explore';
+  currentUni = 'all';
+  currentCuisine = 'all';
+  currentPrice = null;
+  searchQuery = '';
+  document.getElementById('searchInput').value = '';
+  updateAll();
+}
+
+// Nav tabs
+document.getElementById('navTabs').addEventListener('click', e => {
+  const tab = e.target.closest('.nav-tab');
+  if (!tab) return;
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentTab = tab.dataset.tab;
+  renderCards();
+  renderMap();
+});
+
+// Uni tabs
+document.getElementById('uniTabs').addEventListener('click', e => {
+  const tab = e.target.closest('.uni-tab');
+  if (!tab) return;
+  document.querySelectorAll('.uni-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentUni = tab.dataset.uni;
+  renderCards();
+  renderMap();
+});
+
+// Filter chips
+document.getElementById('filterRow').addEventListener('click', e => {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+
+  if (chip.dataset.cuisine) {
+    document.querySelectorAll('[data-cuisine]').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentCuisine = chip.dataset.cuisine;
+  }
+  if (chip.dataset.price) {
+    const wasActive = chip.classList.contains('active');
+    document.querySelectorAll('[data-price]').forEach(c => c.classList.remove('active'));
+    if (!wasActive) {
+      chip.classList.add('active');
+      currentPrice = chip.dataset.price;
+    } else {
+      currentPrice = null;
+    }
+  }
+  renderCards();
+  renderMap();
+});
+
+function updateAll() {
+  // reset UI
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === currentTab));
+  document.querySelectorAll('.uni-tab').forEach(t => t.classList.toggle('active', t.dataset.uni === currentUni));
+  document.querySelectorAll('[data-cuisine]').forEach(c => c.classList.toggle('active', c.dataset.cuisine === currentCuisine));
+  document.querySelectorAll('[data-price]').forEach(c => c.classList.remove('active'));
+  renderCards();
+  renderMap();
+}
+
+// Initial render
+renderCards();
+renderMap();
+</script>
+</body>
+</html>
