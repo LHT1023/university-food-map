@@ -1,0 +1,2875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>食探 · 大学城美食地图</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS VARIABLES ===== */
+:root {
+  --primary: #FF6B35;
+  --primary-light: #FF8F5E;
+  --primary-dark: #E05520;
+  --primary-bg: #FFF5F0;
+  --secondary: #2EC4B6;
+  --secondary-light: #4DD9CC;
+  --secondary-bg: #F0FFFE;
+  --accent: #FFD166;
+  --accent-dark: #F0B830;
+  --purple: #7B61FF;
+  --purple-bg: #F3F0FF;
+  --dark: #1A1A2E;
+  --dark-light: #2D2D44;
+  --surface: #FFFFFF;
+  --surface-alt: #FAF9F7;
+  --surface-warm: #FFF8F5;
+  --text: #1A1A2E;
+  --text-secondary: #6B7280;
+  --text-light: #9CA3AF;
+  --border: #E8E5E1;
+  --border-light: #F0EEEA;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+  --shadow: 0 4px 20px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.1);
+  --shadow-primary: 0 8px 24px rgba(255,107,53,0.2);
+  --radius: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, sans-serif;
+  background: var(--surface-alt);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
+
+/* ===== HEADER ===== */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.92);
+}
+
+.header-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 28px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: var(--shadow-primary);
+  transition: transform 0.3s var(--bounce);
+}
+
+.logo:hover .logo-icon { transform: rotate(-8deg) scale(1.05); }
+
+.logo-text {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 22px;
+  color: var(--text);
+}
+
+.logo-dot { color: var(--primary); }
+
+.header-nav {
+  display: flex;
+  gap: 2px;
+  background: var(--surface-alt);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.nav-btn {
+  padding: 8px 18px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  font-family: inherit;
+  white-space: nowrap;
+  position: relative;
+}
+
+.nav-btn:hover { color: var(--text); background: rgba(0,0,0,0.03); }
+
+.nav-btn.active {
+  background: var(--surface);
+  color: var(--primary);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fav-counter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--primary-bg);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  border: 1.5px solid transparent;
+}
+
+.fav-counter:hover { border-color: var(--primary-light); }
+
+/* ===== MAIN ===== */
+.main-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px 28px 40px;
+}
+
+.view { display: none; animation: viewIn 0.45s var(--ease); }
+.view.active { display: block; }
+
+@keyframes viewIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== MAP VIEW ===== */
+.map-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 20px;
+  height: calc(100vh - 124px);
+}
+
+.map-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Filter Card */
+.filter-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid var(--border-light);
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-clear {
+  font-size: 12px;
+  color: var(--text-light);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+
+.filter-clear:hover { color: var(--primary); }
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 5px 12px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-family: inherit;
+  color: var(--text-secondary);
+  font-weight: 500;
+  user-select: none;
+}
+
+.chip:hover { border-color: var(--primary-light); color: var(--primary); }
+.chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+/* Sort bar */
+.sort-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.sort-bar-left {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.sort-bar-left strong { color: var(--primary); font-size: 16px; }
+
+.sort-options {
+  display: flex;
+  gap: 4px;
+}
+
+.sort-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 14px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: var(--text-secondary);
+}
+
+.sort-btn:hover { border-color: var(--primary-light); }
+.sort-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+/* Budget Slider */
+.budget-track { margin-top: 6px; }
+
+.budget-range {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+  margin: 10px 0 6px;
+  position: relative;
+}
+
+.budget-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 2.5px solid var(--primary);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255,107,53,0.25);
+  transition: transform 0.15s var(--bounce);
+}
+
+.budget-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+.budget-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.budget-labels { font-size: 11px; color: var(--text-light); display: flex; justify-content: space-between; flex:1; }
+.budget-value { font-size: 14px; font-weight: 700; color: var(--primary); margin-left: 12px; white-space: nowrap; }
+
+/* Restaurant Mini Cards */
+.rest-list { display: flex; flex-direction: column; gap: 8px; }
+
+.rest-mini {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  border: 1.5px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.rest-mini::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--primary);
+  transform: scaleY(0);
+  transition: transform 0.25s var(--ease);
+}
+
+.rest-mini:hover { border-color: var(--border); transform: translateX(4px); }
+.rest-mini:hover::before { transform: scaleY(1); }
+.rest-mini.selected { border-color: var(--primary-light); background: var(--primary-bg); }
+.rest-mini.selected::before { transform: scaleY(1); }
+
+.rest-mini-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.rest-mini-name {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rest-mini-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rest-mini-price {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.fav-btn {
+  width: 28px; height: 28px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s var(--bounce);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.fav-btn:hover { transform: scale(1.2); background: var(--primary-bg); }
+.fav-btn.faved { animation: heartPop 0.4s var(--bounce); }
+
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.rest-mini-tags {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.mtag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.mtag-cuisine { background: #FFF3E0; color: #E65100; }
+.mtag-school { background: #E8F5E9; color: #2E7D32; }
+.mtag-dist { background: var(--purple-bg); color: var(--purple); }
+
+.rest-mini-bottom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+
+.rest-mini-desc {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== MAP AREA ===== */
+.map-area {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  position: relative;
+}
+
+.map-toolbar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.map-tool-btn {
+  width: 36px; height: 36px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.map-tool-btn:hover { background: var(--surface-alt); border-color: var(--text-light); }
+
+.map-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  overflow: hidden;
+  position: relative;
+}
+
+.map-canvas:active { cursor: grabbing; }
+
+.map-svg-wrap {
+  transform-origin: 0 0;
+  transition: transform 0.15s ease-out;
+}
+
+/* Map legend */
+.map-legend {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  font-size: 11px;
+  z-index: 50;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* SVG Map styles */
+.campus-zone {
+  fill-opacity: 0.12;
+  stroke-opacity: 0.3;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 3;
+}
+
+.road { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.road-main { stroke: #D4CFC7; stroke-width: 10; }
+.road-sec { stroke: #E0DBD3; stroke-width: 5; }
+.road-path { stroke: #EAE6DF; stroke-width: 2.5; stroke-dasharray: 4 3; }
+
+.map-label {
+  font-family: 'Noto Sans SC', sans-serif;
+  pointer-events: none;
+  user-select: none;
+}
+
+.campus-name { font-size: 14px; font-weight: 700; fill-opacity: 0.7; text-anchor: middle; }
+.road-name { font-size: 9px; fill: #B0A99F; text-anchor: middle; }
+
+/* Markers */
+.marker-group { cursor: pointer; }
+.marker-group:hover .marker-ring { r: 16; opacity: 1; }
+.marker-group:hover .marker-core { r: 8; }
+
+.marker-ring {
+  fill: none;
+  stroke-width: 2;
+  opacity: 0;
+  transition: all 0.25s var(--ease);
+  r: 14;
+}
+
+.marker-core {
+  stroke: white;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  transition: all 0.25s var(--ease);
+  r: 7;
+}
+
+.marker-core.selected { r: 10; stroke-width: 3; }
+
+.marker-name {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Noto Sans SC', sans-serif;
+  text-anchor: middle;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 3px;
+  fill: var(--text);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.marker-group:hover .marker-name { opacity: 1; }
+.marker-name.always-show { opacity: 1; }
+
+.marker-fav {
+  font-size: 10px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* Popup */
+.map-popup {
+  position: absolute;
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  width: 300px;
+  display: none;
+  border: 1px solid var(--border-light);
+}
+
+.map-popup.show {
+  display: block;
+  animation: popFloat 0.3s var(--bounce);
+}
+
+@keyframes popFloat {
+  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.popup-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: var(--surface-alt);
+  border: none;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-light);
+  transition: all 0.2s;
+}
+
+.popup-close:hover { background: var(--border); color: var(--text); }
+
+.popup-emoji { font-size: 36px; margin-bottom: 8px; }
+.popup-name { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+.popup-cuisine { font-size: 13px; color: var(--primary); font-weight: 600; margin-bottom: 10px; }
+
+.popup-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.popup-stat {
+  text-align: center;
+  flex: 1;
+}
+
+.popup-stat-val { font-size: 16px; font-weight: 700; color: var(--text); }
+.popup-stat-label { font-size: 11px; color: var(--text-light); }
+
+.popup-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
+
+.popup-tags { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+
+.popup-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  background: var(--surface-alt);
+  border-radius: 10px;
+  color: var(--text-secondary);
+}
+
+.popup-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.popup-action-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.popup-action-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.popup-action-primary:hover { background: var(--primary-dark); }
+
+.popup-action-secondary {
+  background: var(--surface-alt);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.popup-action-secondary:hover { background: var(--border-light); }
+
+/* ===== AI RECOMMEND VIEW ===== */
+.ai-section {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.ai-hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+}
+
+.ai-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--purple-bg), #E8F5E9);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 16px;
+}
+
+.ai-hero h2 {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 34px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.ai-hero p { color: var(--text-secondary); font-size: 15px; line-height: 1.6; }
+
+/* Chat Interface */
+.ai-chat-container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.ai-chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-alt);
+}
+
+.ai-avatar {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--primary), var(--purple));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: white;
+}
+
+.ai-chat-title { font-size: 14px; font-weight: 700; }
+.ai-chat-status { font-size: 12px; color: var(--secondary); display: flex; align-items: center; gap: 4px; }
+.ai-status-dot { width: 6px; height: 6px; background: var(--secondary); border-radius: 50%; }
+
+.ai-chat-messages {
+  padding: 24px 20px;
+  min-height: 200px;
+  max-height: 500px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chat-msg {
+  max-width: 85%;
+  animation: msgIn 0.3s var(--ease);
+}
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-msg.ai { align-self: flex-start; }
+.chat-msg.user { align-self: flex-end; }
+
+.chat-bubble {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.chat-msg.ai .chat-bubble {
+  background: var(--surface-alt);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-msg.user .chat-bubble {
+  background: var(--primary);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px;
+  background: var(--surface-alt);
+  border-radius: var(--radius-md);
+  border-bottom-left-radius: 4px;
+  width: fit-content;
+}
+
+.typing-dot {
+  width: 7px; height: 7px;
+  background: var(--text-light);
+  border-radius: 50%;
+  animation: typingBounce 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* AI Recommendation Cards */
+.ai-rec-card {
+  background: white;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-top: 10px;
+  transition: all 0.2s;
+}
+
+.ai-rec-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow); }
+
+.ai-rec-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.ai-rec-emoji { font-size: 32px; }
+
+.ai-rec-name { font-size: 15px; font-weight: 700; }
+.ai-rec-meta { font-size: 12px; color: var(--text-secondary); }
+
+.ai-rec-reason {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  padding: 10px 12px;
+  background: var(--surface-alt);
+  border-radius: var(--radius-xs);
+  border-left: 3px solid var(--secondary);
+  margin-top: 8px;
+}
+
+.ai-rec-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+
+.ai-fav-btn {
+  transition: all 0.2s var(--ease) !important;
+  font-weight: 600 !important;
+}
+
+.ai-fav-btn:hover { background: #FFF0F3 !important; border-color: #FFB3C4 !important; color: #FF2D55 !important; }
+.ai-fav-active { background: #FFF0F3 !important; color: #FF2D55 !important; }
+
+/* Quick prompts */
+.quick-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 20px 4px;
+}
+
+.quick-prompt {
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: var(--text-secondary);
+  background: white;
+}
+
+.quick-prompt:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-bg); }
+
+.ai-chat-input {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  gap: 10px;
+  align-items: end;
+  background: var(--surface);
+}
+
+.ai-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  resize: none;
+  min-height: 44px;
+  max-height: 120px;
+  transition: border-color 0.2s;
+  line-height: 1.5;
+}
+
+.ai-input:focus { outline: none; border-color: var(--primary); }
+
+.ai-send-btn {
+  width: 44px; height: 44px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.ai-send-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+.ai-send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ===== TRADITIONAL RECOMMEND ===== */
+.trad-rec-section {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border-light);
+}
+
+.trad-rec-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trad-rec-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+
+.pref-form {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 20px;
+}
+
+.pref-group { margin-bottom: 20px; }
+
+.pref-label {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pref-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.pref-chip {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: var(--text-secondary);
+  background: white;
+  font-weight: 500;
+}
+
+.pref-chip:hover { border-color: var(--primary-light); color: var(--primary); }
+.pref-chip.active { border-color: var(--primary); background: var(--primary-bg); color: var(--primary); font-weight: 700; }
+
+.scene-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+.scene-item {
+  padding: 14px 8px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  background: white;
+}
+
+.scene-item:hover { border-color: var(--secondary); }
+.scene-item.active { border-color: var(--secondary); background: var(--secondary-bg); }
+.scene-icon { font-size: 24px; margin-bottom: 4px; }
+.scene-label { font-size: 12px; font-weight: 600; }
+
+.gen-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s;
+}
+
+.gen-btn:hover { box-shadow: var(--shadow-primary); transform: translateY(-2px); }
+
+.trad-results { display: flex; flex-direction: column; gap: 14px; }
+
+.trad-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border-light);
+  display: flex;
+  gap: 16px;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.trad-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow); }
+
+.trad-rank {
+  position: absolute;
+  top: -1px; left: -1px;
+  padding: 4px 12px;
+  border-radius: var(--radius) 0 var(--radius-xs) 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+}
+
+.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); }
+.rank-2 { background: linear-gradient(135deg, #A8B8C8, #8898A8); }
+.rank-3 { background: linear-gradient(135deg, #CD7F32, #A0522D); }
+
+.trad-emoji {
+  width: 64px; height: 64px;
+  background: var(--surface-alt);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.trad-info { flex: 1; }
+.trad-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.trad-meta { font-size: 12px; color: var(--primary); font-weight: 500; margin-bottom: 6px; }
+.trad-reason { font-size: 13px; color: var(--text-secondary); line-height: 1.6; padding: 8px 12px; background: var(--surface-alt); border-radius: var(--radius-xs); border-left: 3px solid var(--secondary); }
+.trad-stats { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--text-secondary); }
+
+/* ===== SPINNER VIEW ===== */
+.spin-section {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.spin-hero h2 {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.spin-hero p { color: var(--text-secondary); margin-bottom: 36px; }
+
+.spin-wheel-wrap {
+  width: 300px; height: 300px;
+  margin: 0 auto 32px;
+  position: relative;
+}
+
+.spin-pointer {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.spin-canvas-wrap {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 0 0 5px var(--primary), 0 0 0 9px rgba(255,107,53,0.15), var(--shadow-md);
+  overflow: hidden;
+}
+
+#spinCanvas {
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+
+.spin-center-btn {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px; height: 64px;
+  background: white;
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  color: var(--primary);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  z-index: 20;
+  transition: all 0.2s var(--bounce);
+}
+
+.spin-center-btn:hover { transform: translate(-50%, -50%) scale(1.1); }
+
+.spin-action-btn {
+  padding: 14px 40px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border: none;
+  border-radius: 28px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  letter-spacing: 2px;
+  transition: all 0.25s;
+  box-shadow: var(--shadow-primary);
+}
+
+.spin-action-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(255,107,53,0.3); }
+.spin-action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.spin-result {
+  margin-top: 32px;
+  display: none;
+}
+
+.spin-result.show { display: block; animation: popFloat 0.5s var(--bounce); }
+
+.spin-result-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--accent);
+}
+
+/* ===== REVIEW VIEW ===== */
+.review-section { max-width: 800px; margin: 0 auto; }
+
+.review-hero {
+  text-align: center;
+  padding: 48px 20px 24px;
+}
+
+.review-hero h2 {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.review-hero p { color: var(--text-secondary); }
+
+.review-controls {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-select {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: white;
+  cursor: pointer;
+}
+
+.review-select:focus { outline: none; border-color: var(--primary); }
+
+.write-box {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 16px;
+}
+
+.write-box-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.star-input {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.star-btn {
+  font-size: 28px;
+  cursor: pointer;
+  transition: transform 0.15s var(--bounce);
+  filter: grayscale(1) opacity(0.25);
+  background: none;
+  border: none;
+}
+
+.star-btn:hover { transform: scale(1.15); }
+.star-btn.lit { filter: none; }
+
+.write-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+
+.write-textarea:focus { outline: none; border-color: var(--primary); }
+
+.write-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+
+.write-tag {
+  padding: 4px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: var(--text-secondary);
+  background: white;
+}
+
+.write-tag:hover { border-color: var(--secondary); }
+.write-tag.active { background: var(--secondary); color: white; border-color: var(--secondary); }
+
+.post-btn {
+  padding: 10px 28px;
+  background: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.post-btn:hover { background: #239E93; }
+
+.reviews-feed { display: flex; flex-direction: column; gap: 12px; }
+
+.review-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  border: 1px solid var(--border-light);
+  transition: border-color 0.2s;
+}
+
+.review-card:hover { border-color: var(--border); }
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.reviewer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewer-ava {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: white;
+  font-weight: 700;
+}
+
+.reviewer-name { font-size: 13px; font-weight: 600; }
+.reviewer-school { font-size: 11px; color: var(--text-light); }
+.review-rest-label { font-size: 12px; color: var(--primary); font-weight: 600; }
+
+.review-stars { margin-bottom: 6px; font-size: 14px; }
+.review-text { font-size: 14px; line-height: 1.7; color: var(--text-secondary); margin: 8px 0; }
+
+.review-card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+
+.rv-tag {
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+}
+
+.review-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.like-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: color 0.2s;
+  border: none;
+  background: none;
+  font-size: 12px;
+  color: var(--text-light);
+  font-family: inherit;
+}
+
+.like-btn:hover { color: var(--primary); }
+
+/* ===== FAVORITES VIEW ===== */
+.fav-section { max-width: 900px; margin: 0 auto; }
+
+.fav-hero {
+  text-align: center;
+  padding: 48px 20px 24px;
+}
+
+.fav-hero h2 {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.fav-hero p { color: var(--text-secondary); }
+
+.fav-empty {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+}
+
+.fav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.fav-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  transition: all 0.25s var(--ease);
+  position: relative;
+}
+
+.fav-card:hover {
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.fav-card-banner {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  position: relative;
+}
+
+.fav-card-body { padding: 16px 18px 18px; }
+
+.fav-card-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.fav-card-cuisine {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.fav-card-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.fav-card-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fav-card-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fav-card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 14px; }
+
+.fav-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fav-card-btn {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.fav-card-btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.fav-card-btn-primary:hover { background: var(--primary-dark); }
+
+.fav-card-btn-outline {
+  background: white;
+  color: #FF2D55;
+  border: 1.5px solid #FFD1DA;
+}
+
+.fav-card-btn-outline:hover { background: #FFF0F3; border-color: #FF2D55; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .map-layout { grid-template-columns: 1fr; height: auto; }
+  .map-sidebar { order: 2; max-height: 400px; }
+  .map-area { order: 1; min-height: 50vh; }
+  .scene-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .header-inner { padding: 0 16px; }
+  .header-nav { overflow-x: auto; }
+  .main-container { padding: 16px; }
+  .fav-counter { display: none; }
+}
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--dark);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 28px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  transition: transform 0.4s var(--ease);
+  box-shadow: var(--shadow-lg);
+  white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ===== LOADING SHIMMER ===== */
+.shimmer {
+  background: linear-gradient(90deg, var(--surface-alt) 25%, #f0eeea 50%, var(--surface-alt) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-xs);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🍜</div>
+      <div>
+        <span class="logo-text">食探<span class="logo-dot">.</span></span>
+      </div>
+    </div>
+    <nav class="header-nav" id="headerNav">
+      <button class="nav-btn active" onclick="switchView('map')">🗺️ 地图</button>
+      <button class="nav-btn" onclick="switchView('recommend')">🤖 AI推荐</button>
+      <button class="nav-btn" onclick="switchView('random')">🎰 今天吃啥</button>
+      <button class="nav-btn" onclick="switchView('review')">💬 评价</button>
+      <button class="nav-btn" onclick="switchView('favorites')">❤️ 收藏</button>
+    </nav>
+    <div class="header-actions">
+      <div class="fav-counter" onclick="switchView('favorites')">
+        ❤️ <span id="favCount">0</span> 收藏
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="main-container">
+
+  <!-- ===== MAP VIEW ===== -->
+  <div id="view-map" class="view active">
+    <div class="map-layout">
+      <div class="map-sidebar">
+        <!-- Cuisine Filter -->
+        <div class="filter-card">
+          <div class="filter-header">
+            <div class="filter-label">🍴 菜系</div>
+            <button class="filter-clear" onclick="clearCuisines()">清除</button>
+          </div>
+          <div class="filter-chips" id="cuisineChips"></div>
+        </div>
+        <!-- School Filter -->
+        <div class="filter-card">
+          <div class="filter-header">
+            <div class="filter-label">🎓 学校</div>
+            <button class="filter-clear" onclick="clearSchools()">清除</button>
+          </div>
+          <div class="filter-chips" id="schoolChips"></div>
+        </div>
+        <!-- Budget -->
+        <div class="filter-card">
+          <div class="filter-header">
+            <div class="filter-label">💰 人均预算</div>
+          </div>
+          <div class="budget-track">
+            <input type="range" class="budget-range" min="0" max="100" value="100" id="budgetSlider" oninput="onBudgetChange()">
+            <div class="budget-meta">
+              <div class="budget-labels"><span>¥0</span><span>¥100+</span></div>
+              <div class="budget-value" id="budgetVal">不限</div>
+            </div>
+          </div>
+        </div>
+        <!-- Sort -->
+        <div class="sort-bar">
+          <div class="sort-bar-left">找到 <strong id="restCount">0</strong> 家</div>
+          <div class="sort-options">
+            <button class="sort-btn active" onclick="setSort('rating', this)">评分</button>
+            <button class="sort-btn" onclick="setSort('price', this)">价格</button>
+            <button class="sort-btn" onclick="setSort('distance', this)">距离</button>
+          </div>
+        </div>
+        <!-- List -->
+        <div class="rest-list" id="restList"></div>
+      </div>
+      <div class="map-area" id="mapArea">
+        <div class="map-toolbar">
+          <button class="map-tool-btn" onclick="zoomMap(1)" title="放大">＋</button>
+          <button class="map-tool-btn" onclick="zoomMap(-1)" title="缩小">－</button>
+          <button class="map-tool-btn" onclick="resetMap()" title="重置">⟳</button>
+        </div>
+        <div class="map-canvas" id="mapCanvas"
+             onmousedown="mapDragStart(event)" onmousemove="mapDragMove(event)" onmouseup="mapDragEnd()"
+             onmouseleave="mapDragEnd()" onwheel="mapWheel(event)"
+             ontouchstart="mapTouchStart(event)" ontouchmove="mapTouchMove(event)" ontouchend="mapDragEnd()">
+          <div class="map-svg-wrap" id="mapSvgWrap"></div>
+        </div>
+        <div class="map-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#4A90D9"></div>华光</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#7B61FF"></div>黎明</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#E5533D"></div>晨曦</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#2EC4B6"></div>星河</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#FF6B35"></div>天远</div>
+          <div class="legend-item"><div class="legend-dot" style="background:red; width:8px; height:8px; border:2px solid white; box-shadow:0 0 3px rgba(0,0,0,0.3);"></div>收藏</div>
+        </div>
+        <div class="map-popup" id="mapPopup"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AI RECOMMEND VIEW ===== -->
+  <div id="view-recommend" class="view">
+    <div class="ai-section">
+      <div class="ai-hero">
+        <div class="ai-hero-badge">🧠 本地智能推荐引擎</div>
+        <h2>AI 美食顾问</h2>
+        <p>用自然语言描述你的需求，智能引擎为你精准推荐<br>比如："下课了又累又饿，想吃辣的，预算20块以内"</p>
+      </div>
+
+      <div class="ai-chat-container">
+        <div class="ai-chat-header">
+          <div class="ai-avatar">🤖</div>
+          <div>
+            <div class="ai-chat-title">食探 AI 助手</div>
+            <div class="ai-chat-status"><div class="ai-status-dot"></div>在线</div>
+          </div>
+        </div>
+        <div class="ai-chat-messages" id="chatMessages">
+          <div class="chat-msg ai">
+            <div class="chat-bubble">
+              嗨！我是食探AI助手 🍜<br><br>
+              告诉我你现在的状态和需求，我来帮你推荐最合适的餐厅！<br><br>
+              比如你可以说：<br>
+              • "刚考完试想犒劳自己，预算50左右"<br>
+              • "宿舍4个人想聚餐，最好量大实惠"<br>
+              • "减肥期间想吃健康的"
+            </div>
+          </div>
+        </div>
+        <div class="quick-prompts" id="quickPrompts">
+          <button class="quick-prompt" onclick="sendQuick(this.textContent)">又饿又穷，20块以内吃饱</button>
+          <button class="quick-prompt" onclick="sendQuick(this.textContent)">和女朋友约会，想吃有情调的</button>
+          <button class="quick-prompt" onclick="sendQuick(this.textContent)">四个人聚餐，量大管饱</button>
+          <button class="quick-prompt" onclick="sendQuick(this.textContent)">深夜复习完想吃宵夜</button>
+          <button class="quick-prompt" onclick="sendQuick(this.textContent)">减脂期吃什么好？</button>
+        </div>
+        <div class="ai-chat-input">
+          <textarea class="ai-input" id="aiInput" rows="1" placeholder="描述你的需求..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiMsg()}" oninput="autoGrow(this)"></textarea>
+          <button class="ai-send-btn" id="aiSendBtn" onclick="sendAiMsg()">➤</button>
+        </div>
+      </div>
+
+      <!-- Traditional Recommend -->
+      <div class="trad-rec-section">
+        <div class="trad-rec-title">🎯 手动筛选推荐</div>
+        <div class="trad-rec-sub">不想打字？直接选择偏好，一键获取推荐</div>
+
+        <div class="pref-form">
+          <div class="pref-group">
+            <div class="pref-label">😋 口味偏好</div>
+            <div class="pref-chips" id="prefTastes"></div>
+          </div>
+          <div class="pref-group">
+            <div class="pref-label">💰 预算范围</div>
+            <div class="pref-chips" id="prefBudgets"></div>
+          </div>
+          <div class="pref-group">
+            <div class="pref-label">🎭 用餐场景</div>
+            <div class="scene-grid" id="prefScenes"></div>
+          </div>
+          <button class="gen-btn" onclick="generateRec()">✨ 为我推荐</button>
+        </div>
+        <div class="trad-results" id="tradResults"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RANDOM VIEW ===== -->
+  <div id="view-random" class="view">
+    <div class="spin-section">
+      <div class="spin-hero">
+        <h2>🎰 今天吃什么？</h2>
+        <p>选择困难症终结者 — 让命运决定你的下一餐</p>
+      </div>
+      <div class="spin-wheel-wrap">
+        <div class="spin-pointer">▼</div>
+        <div class="spin-canvas-wrap">
+          <canvas id="spinCanvas" width="300" height="300"></canvas>
+        </div>
+        <div class="spin-center-btn" onclick="doSpin()">GO</div>
+      </div>
+      <button class="spin-action-btn" id="spinBtn" onclick="doSpin()">🎲 转一转</button>
+      <div class="spin-result" id="spinResult">
+        <div class="spin-result-card">
+          <div style="font-size:48px; margin-bottom:8px;" id="spinEmoji"></div>
+          <h3 style="font-family:'ZCOOL KuaiLe',cursive; font-size:26px; color:var(--primary); margin-bottom:4px;" id="spinName"></h3>
+          <p style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;" id="spinMeta"></p>
+          <p style="font-size:14px; color:var(--text-secondary); line-height:1.6;" id="spinDesc"></p>
+          <div style="display:flex; gap:8px; justify-content:center; margin-top:16px;">
+            <button class="popup-action-btn popup-action-primary" style="flex:none; padding:10px 24px;" onclick="doSpin()">再来一次 🎲</button>
+            <button class="popup-action-btn popup-action-secondary" style="flex:none; padding:10px 24px;" onclick="favFromSpin()">收藏 ❤️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REVIEW VIEW ===== -->
+  <div id="view-review" class="view">
+    <div class="review-section">
+      <div class="review-hero">
+        <h2>💬 学生真实评价</h2>
+        <p>来自五所高校同学的亲身体验</p>
+      </div>
+      <div class="review-controls">
+        <select class="review-select" id="reviewFilter" onchange="renderReviews()">
+          <option value="">全部餐厅</option>
+        </select>
+      </div>
+      <div class="write-box">
+        <div class="write-box-title">✍️ 写评价</div>
+        <div class="star-input" id="starInput"></div>
+        <select class="review-select" id="writeRestSel" style="margin-bottom:10px;"><option value="">选择餐厅</option></select>
+        <textarea class="write-textarea" id="writeText" placeholder="分享你的用餐体验...口味如何？性价比怎样？"></textarea>
+        <div class="write-tags" id="writeTags"></div>
+        <button class="post-btn" onclick="postReview()">发布评价</button>
+      </div>
+      <div class="reviews-feed" id="reviewsFeed"></div>
+    </div>
+  </div>
+
+  <!-- ===== FAVORITES VIEW ===== -->
+  <div id="view-favorites" class="view">
+    <div class="fav-section">
+      <div class="fav-hero">
+        <h2>❤️ 我的收藏</h2>
+        <p>你收藏的宝藏餐厅都在这里</p>
+      </div>
+      <div class="fav-empty" id="favEmpty" style="display:none;">
+        <div style="font-size:64px; margin-bottom:16px;">🤍</div>
+        <div style="font-size:16px; font-weight:600; margin-bottom:8px;">还没有收藏任何餐厅</div>
+        <div style="font-size:14px; color:var(--text-light); margin-bottom:20px;">在地图、AI推荐或转盘中点击 ❤️ 即可收藏</div>
+        <button class="gen-btn" style="max-width:200px; margin:0 auto;" onclick="switchView('map')">去探索 →</button>
+      </div>
+      <div class="fav-grid" id="favGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const SCHOOLS = [
+  { id:'hgd', name:'华光大学', abbr:'华光', color:'#4A90D9', cx:200, cy:200 },
+  { id:'lmd', name:'黎明大学', abbr:'黎明', color:'#7B61FF', cx:415, cy:160 },
+  { id:'cxd', name:'晨曦大学', abbr:'晨曦', color:'#E5533D', cx:630, cy:195 },
+  { id:'xhd', name:'星河大学', abbr:'星河', color:'#2EC4B6', cx:325, cy:310 },
+  { id:'tyd', name:'天远大学', abbr:'天远', color:'#FF6B35', cx:515, cy:310 },
+];
+
+const RESTS = [
+  { id:1, name:'蜀香阁', cuisine:'川菜', price:28, rating:4.6, school:'hgd', x:180, y:155, emoji:'🌶️', tags:['微辣可调','出餐快'], desc:'正宗川味小馆，招牌水煮鱼和麻婆豆腐，学生套餐18元起', hours:'10:30-21:30' },
+  { id:2, name:'湘里人家', cuisine:'湘菜', price:32, rating:4.5, school:'hgd', x:150, y:210, emoji:'🔥', tags:['下饭神器','量大'], desc:'湖南老板自营，辣椒炒肉一绝，午市排队常态', hours:'11:00-21:00' },
+  { id:3, name:'粤式茶餐厅', cuisine:'粤菜', price:35, rating:4.4, school:'lmd', x:395, y:125, emoji:'🥢', tags:['早茶','精致'], desc:'虾饺烧卖肠粉，周末早茶套餐很划算', hours:'8:00-21:00' },
+  { id:4, name:'一风堂拉面', cuisine:'日料', price:42, rating:4.7, school:'lmd', x:440, y:185, emoji:'🍜', tags:['汤头浓郁','深夜营业'], desc:'豚骨拉面招牌，加面不加价，夜宵首选', hours:'11:00-02:00' },
+  { id:5, name:'首尔韩舍', cuisine:'韩餐', price:38, rating:4.3, school:'cxd', x:615, y:145, emoji:'🥘', tags:['双人套餐','年糕火锅'], desc:'韩式拌饭石锅和部队锅，双人套餐58超值', hours:'11:00-22:00' },
+  { id:6, name:'老张烧烤', cuisine:'烧烤', price:25, rating:4.5, school:'cxd', x:660, y:215, emoji:'🍢', tags:['露天撸串','啤酒便宜'], desc:'传说级烧烤摊，羊肉串和烤茄子必点', hours:'17:00-03:00' },
+  { id:7, name:'海底捞·学府店', cuisine:'火锅', price:75, rating:4.6, school:'xhd', x:355, y:305, emoji:'🫕', tags:['服务好','免费小吃'], desc:'服务天花板，学生证打折', hours:'10:00-06:00' },
+  { id:8, name:'兰州正宗牛肉面', cuisine:'面食', price:15, rating:4.8, school:'hgd', x:215, y:245, emoji:'🍲', tags:['实惠','早餐首选'], desc:'手拉面每天现做，性价比之王', hours:'6:30-20:00' },
+  { id:9, name:'麦当劳·大学城店', cuisine:'快餐', price:30, rating:4.0, school:'xhd', x:310, y:355, emoji:'🍔', tags:['24小时','自习友好'], desc:'深夜复习累了来一份，24h营业救命', hours:'24小时' },
+  { id:10, name:'蜜雪冰城', cuisine:'奶茶甜品', price:8, rating:4.2, school:'tyd', x:525, y:335, emoji:'🧋', tags:['便宜','解暑'], desc:'穷鬼快乐水，柠檬水4块的快乐', hours:'9:00-23:00' },
+  { id:11, name:'杨国福麻辣烫', cuisine:'麻辣烫', price:22, rating:4.3, school:'tyd', x:545, y:275, emoji:'🥬', tags:['自选','蔬菜多'], desc:'按斤称自选，蔬菜多选很健康', hours:'10:00-22:00' },
+  { id:12, name:'牛排杯西餐', cuisine:'西餐', price:55, rating:4.1, school:'lmd', x:375, y:175, emoji:'🥩', tags:['约会','有情调'], desc:'简餐西餐，适合约会', hours:'11:30-22:00' },
+  { id:13, name:'东北铁锅炖', cuisine:'东北菜', price:45, rating:4.5, school:'xhd', x:295, y:280, emoji:'🍖', tags:['量巨大','适合聚餐'], desc:'铁锅炖大鹅，四人份够六人吃', hours:'11:00-21:30' },
+  { id:14, name:'马记清真面馆', cuisine:'清真', price:18, rating:4.4, school:'tyd', x:490, y:355, emoji:'🥟', tags:['手工牛肉馅','干净'], desc:'牛肉水饺和大盘鸡，干净实惠', hours:'7:00-21:00' },
+  { id:15, name:'素心缘', cuisine:'素食', price:20, rating:4.2, school:'cxd', x:600, y:255, emoji:'🥗', tags:['健康','减脂'], desc:'素食自助按重量计价，健身减脂最爱', hours:'10:30-20:30' },
+  { id:16, name:'鱼酸菜鱼', cuisine:'川菜', price:35, rating:4.6, school:'lmd', x:445, y:140, emoji:'🐟', tags:['招牌酸菜鱼','微辣鲜香'], desc:'酸菜鱼超大份，两人吃绰绰有余', hours:'11:00-22:00' },
+  { id:17, name:'喜茶GO', cuisine:'奶茶甜品', price:18, rating:4.3, school:'cxd', x:580, y:180, emoji:'🍵', tags:['颜值高','联名多'], desc:'多肉葡萄yyds，比蜜雪贵但确实好喝', hours:'10:00-22:30' },
+  { id:18, name:'沙县小吃', cuisine:'快餐', price:12, rating:4.1, school:'hgd', x:235, y:175, emoji:'🥟', tags:['实惠','速度快'], desc:'蒸饺+拌面+汤=12块管饱', hours:'6:00-22:00' },
+  { id:19, name:'炭火韩式烤肉', cuisine:'韩餐', price:68, rating:4.5, school:'xhd', x:340, y:245, emoji:'🥓', tags:['五花肉','聚餐好去处'], desc:'自助韩式烤肉68/人，周二学生日58', hours:'11:30-23:00' },
+  { id:20, name:'云南过桥米线', cuisine:'面食', price:22, rating:4.4, school:'tyd', x:510, y:260, emoji:'🍜', tags:['汤鲜','配料多'], desc:'十几种配菜正宗过桥米线', hours:'10:00-21:00' },
+];
+
+const REVIEWS_INIT = [
+  { id:1, restId:8, user:'面条爱好者', school:'华光大学', avatar:'🧑‍🎓', color:'#4A90D9', rating:5, text:'每天早上必来一碗，面条劲道汤头清爽，最重要才15块！学生党救星。老板认识你之后经常多给肉。', tags:['性价比高','老板nice'], time:'2天前', likes:42 },
+  { id:2, restId:4, user:'深夜食堂', school:'黎明大学', avatar:'🌙', color:'#7B61FF', rating:5, text:'期末周复习到凌晨，一碗浓汤拉面就是最好的慰藉。加面不加价真良心，叉烧给得多。', tags:['深夜好去处','治愈'], time:'3天前', likes:38 },
+  { id:3, restId:6, user:'烧烤永远的神', school:'晨曦大学', avatar:'🔥', color:'#E5533D', rating:5, text:'大学四年吃了不下100次！老张羊肉串绝对大学城一绝，配上冰啤酒就是青春的味道。', tags:['青春回忆','必吃'], time:'1周前', likes:67 },
+  { id:4, restId:7, user:'火锅少女', school:'星河大学', avatar:'👧', color:'#2EC4B6', rating:4, text:'服务没话说但人太多！建议工作日中午去，周末晚上基本等1小时+。学生证大概9折。', tags:['服务好','排队长'], time:'1周前', likes:25 },
+  { id:5, restId:10, user:'穷鬼快乐', school:'天远大学', avatar:'🧋', color:'#FF6B35', rating:4, text:'甜筒2块柠檬水4块奶茶6块起——蜜雪真是学生党快乐源泉。便宜好喝解渴。', tags:['便宜','夏天必备'], time:'2周前', likes:53 },
+  { id:6, restId:1, user:'川菜通', school:'华光大学', avatar:'🌶️', color:'#4A90D9', rating:4, text:'水煮鱼不错花椒麻劲正。学生套餐18块有荤有素有汤。就是中午12点基本没位置。', tags:['味道正宗','需要早去'], time:'2周前', likes:31 },
+  { id:7, restId:13, user:'吃撑体质', school:'星河大学', avatar:'🍖', color:'#2EC4B6', rating:5, text:'宿舍四个人点铁锅炖大鹅中份根本吃不完！量太大了味道也棒。东北同学说跟家里差不多。', tags:['量巨大','聚餐首选'], time:'3周前', likes:29 },
+  { id:8, restId:12, user:'偶尔奢侈', school:'黎明大学', avatar:'🥂', color:'#7B61FF', rating:4, text:'牛排套餐55块在西餐里算便宜，环境安静有情调。约会会来，平时不太舍得哈哈。', tags:['适合约会','环境好'], time:'1个月前', likes:18 },
+];
+
+const REVIEW_TAGS = ['性价比高','味道好','环境好','服务好','出餐快','量大','适合聚餐','深夜好去处','健康','老板nice'];
+const TASTES = ['辣🌶️','清淡🥬','甜🍰','咸香🧂','酸爽🍋','鲜🍲','重口🔥','家常🏠'];
+const BUDGET_OPTS = ['10元以内','10-25元','25-50元','50元以上'];
+const SCENES = [
+  { icon:'🎉', label:'聚餐' },
+  { icon:'💕', label:'约会' },
+  { icon:'⚡', label:'快速' },
+  { icon:'🌙', label:'宵夜' },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  cuisines: new Set(),
+  schools: new Set(),
+  budget: 100,
+  sort: 'rating',
+  selectedId: null,
+  favorites: new Set(JSON.parse(localStorage.getItem('foodmap_favs') || '[]')),
+  // map
+  mapScale: 1,
+  mapX: 0, mapY: 0,
+  dragging: false, dragStartX: 0, dragStartY: 0, dragMapX: 0, dragMapY: 0,
+  // recommend
+  prefTastes: new Set(),
+  prefBudget: '',
+  prefScene: '',
+  // review
+  writeRating: 0,
+  writeTags: new Set(),
+  // spin
+  spinning: false,
+  spinAngle: 0,
+  lastSpinResult: null,
+  // reviews data (mutable)
+  reviews: [...REVIEWS_INIT],
+};
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  renderCuisineChips();
+  renderSchoolChips();
+  renderRestList();
+  renderMapSvg();
+  renderPrefForm();
+  renderStarInput();
+  renderWriteTags();
+  renderReviewSelects();
+  renderReviews();
+  drawWheel();
+  updateFavCount();
+}
+
+// ============================================================
+// VIEW SWITCH
+// ============================================================
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  const views = ['map','recommend','random','review','favorites'];
+  document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', views[i] === name));
+  if (name === 'favorites') renderFavGrid();
+}
+
+// ============================================================
+// FILTERS
+// ============================================================
+function renderCuisineChips() {
+  const types = [...new Set(RESTS.map(r => r.cuisine))];
+  document.getElementById('cuisineChips').innerHTML = types.map(c =>
+    `<button class="chip ${state.cuisines.has(c)?'active':''}" onclick="toggleFilter('cuisines','${c}',this)">${c}</button>`
+  ).join('');
+}
+
+function renderSchoolChips() {
+  document.getElementById('schoolChips').innerHTML = SCHOOLS.map(s =>
+    `<button class="chip ${state.schools.has(s.id)?'active':''}" onclick="toggleFilter('schools','${s.id}',this)">${s.abbr}</button>`
+  ).join('');
+}
+
+function toggleFilter(key, val, el) {
+  if (state[key].has(val)) { state[key].delete(val); el.classList.remove('active'); }
+  else { state[key].add(val); el.classList.add('active'); }
+  refresh();
+}
+
+function clearCuisines() { state.cuisines.clear(); renderCuisineChips(); refresh(); }
+function clearSchools() { state.schools.clear(); renderSchoolChips(); refresh(); }
+
+function onBudgetChange() {
+  state.budget = +document.getElementById('budgetSlider').value;
+  document.getElementById('budgetVal').textContent = state.budget >= 100 ? '不限' : `≤¥${state.budget}`;
+  refresh();
+}
+
+function setSort(s, el) {
+  state.sort = s;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderRestList();
+}
+
+function getFiltered() {
+  let list = RESTS.filter(r => {
+    if (state.cuisines.size && !state.cuisines.has(r.cuisine)) return false;
+    if (state.schools.size && !state.schools.has(r.school)) return false;
+    if (state.budget < 100 && r.price > state.budget) return false;
+    return true;
+  });
+  // Sort
+  if (state.sort === 'rating') list.sort((a,b) => b.rating - a.rating);
+  else if (state.sort === 'price') list.sort((a,b) => a.price - b.price);
+  else if (state.sort === 'distance') {
+    // Distance from center of map
+    const cx = 400, cy = 225;
+    list.sort((a,b) => {
+      const da = Math.hypot(a.x - cx, a.y - cy);
+      const db = Math.hypot(b.x - cx, b.y - cy);
+      return da - db;
+    });
+  }
+  return list;
+}
+
+function refresh() {
+  renderRestList();
+  renderMapSvg();
+}
+
+// ============================================================
+// FAVORITES
+// ============================================================
+function toggleFav(id, e) {
+  if (e) e.stopPropagation();
+  if (state.favorites.has(id)) state.favorites.delete(id);
+  else { state.favorites.add(id); }
+  localStorage.setItem('foodmap_favs', JSON.stringify([...state.favorites]));
+  updateFavCount();
+  renderRestList();
+  renderMapSvg();
+  renderFavGrid();
+  // Re-render AI chat fav buttons in-place
+  document.querySelectorAll('.ai-fav-btn').forEach(btn => {
+    const rid = parseInt(btn.dataset.rid);
+    const faved = state.favorites.has(rid);
+    btn.textContent = faved ? '❤️ 已收藏' : '🤍 收藏';
+    btn.className = `popup-tag ai-fav-btn ${faved ? 'ai-fav-active' : ''}`;
+  });
+}
+
+function updateFavCount() {
+  document.getElementById('favCount').textContent = state.favorites.size;
+}
+
+function renderFavGrid() {
+  const favRests = RESTS.filter(r => state.favorites.has(r.id));
+  const grid = document.getElementById('favGrid');
+  const empty = document.getElementById('favEmpty');
+
+  if (favRests.length === 0) {
+    empty.style.display = 'block';
+    grid.innerHTML = '';
+    return;
+  }
+
+  empty.style.display = 'none';
+  grid.innerHTML = favRests.map(r => {
+    const sch = SCHOOLS.find(s => s.id === r.school);
+    const dist = Math.round(Math.hypot(r.x - 400, r.y - 225) * 2.5);
+    const revCount = state.reviews.filter(rv => rv.restId === r.id).length;
+    return `
+      <div class="fav-card">
+        <div class="fav-card-banner" style="background: linear-gradient(135deg, ${sch.color}18, ${sch.color}08);">
+          ${r.emoji}
+        </div>
+        <div class="fav-card-body">
+          <div class="fav-card-name">${r.name}</div>
+          <div class="fav-card-cuisine">${r.cuisine} · ${sch.name}附近</div>
+          <div class="fav-card-stats">
+            <div class="fav-card-stat">⭐ ${r.rating}</div>
+            <div class="fav-card-stat">💰 ¥${r.price}/人</div>
+            <div class="fav-card-stat">📍 ${dist}m</div>
+            <div class="fav-card-stat">💬 ${revCount}条评价</div>
+          </div>
+          <div class="fav-card-desc">${r.desc}</div>
+          <div class="fav-card-tags">
+            ${r.tags.map(t => `<span class="popup-tag">${t}</span>`).join('')}
+            <span class="popup-tag">🕐 ${r.hours}</span>
+          </div>
+          <div class="fav-card-actions">
+            <button class="fav-card-btn fav-card-btn-primary" onclick="selectRest(${r.id});switchView('map');">在地图中查看</button>
+            <button class="fav-card-btn fav-card-btn-outline" onclick="toggleFav(${r.id})">取消收藏</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// REST LIST
+// ============================================================
+function renderRestList() {
+  const filtered = getFiltered();
+  document.getElementById('restCount').textContent = filtered.length;
+  document.getElementById('restList').innerHTML = filtered.map(r => {
+    const sch = SCHOOLS.find(s => s.id === r.school);
+    const isFav = state.favorites.has(r.id);
+    const dist = Math.round(Math.hypot(r.x - 400, r.y - 225) * 2.5); // fake meters
+    return `
+      <div class="rest-mini ${state.selectedId===r.id?'selected':''}" onclick="selectRest(${r.id})">
+        <div class="rest-mini-top">
+          <div class="rest-mini-name">${r.emoji} ${r.name}</div>
+          <div class="rest-mini-right">
+            <div class="rest-mini-price">¥${r.price}</div>
+            <button class="fav-btn ${isFav?'faved':''}" onclick="toggleFav(${r.id},event)">${isFav?'❤️':'🤍'}</button>
+          </div>
+        </div>
+        <div class="rest-mini-tags">
+          <span class="mtag mtag-cuisine">${r.cuisine}</span>
+          <span class="mtag mtag-school" style="background:${sch.color}12;color:${sch.color}">${sch.abbr}</span>
+          <span class="mtag mtag-dist">${dist}m</span>
+        </div>
+        <div class="rest-mini-bottom">
+          <div class="rating-badge">⭐ ${r.rating}</div>
+          <span>${r.tags[0]}</span>
+          <span>·</span>
+          <span>${r.hours}</span>
+        </div>
+        <div class="rest-mini-desc">${r.desc}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectRest(id) {
+  state.selectedId = id;
+  renderRestList();
+  renderMapSvg();
+  showMapPopup(id);
+}
+
+// ============================================================
+// MAP RENDERING
+// ============================================================
+function renderMapSvg() {
+  const filtered = getFiltered();
+  const fIds = new Set(filtered.map(r => r.id));
+
+  const svg = `
+  <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" style="width:800px;height:450px;">
+    <defs>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E8E5E1" stroke-width="0.5" opacity="0.5"/>
+      </pattern>
+    </defs>
+
+    <!-- BG -->
+    <rect width="800" height="450" fill="#F5F2ED"/>
+    <rect width="800" height="450" fill="url(#grid)"/>
+
+    <!-- Water -->
+    <ellipse cx="760" cy="40" rx="70" ry="50" fill="#C8E1EE" opacity="0.4"/>
+    <text x="760" y="44" text-anchor="middle" font-size="10" fill="#8AABB8" font-family="Noto Sans SC">明湖</text>
+
+    <!-- Campus zones -->
+    ${SCHOOLS.map(s => `
+      <rect class="campus-zone" x="${s.cx-80}" y="${s.cy-80}" width="160" height="160" rx="16"
+            fill="${s.color}" stroke="${s.color}"/>
+      <text class="map-label campus-name" x="${s.cx}" y="${s.cy+6}" fill="${s.color}">${s.name}</text>
+    `).join('')}
+
+    <!-- Roads -->
+    <path class="road road-main" d="M0,220 L800,220"/>
+    <path class="road road-main" d="M300,0 L300,450"/>
+    <path class="road road-main" d="M540,0 L540,450"/>
+    <path class="road road-sec" d="M0,120 L800,120"/>
+    <path class="road road-sec" d="M0,355 L800,355"/>
+    <path class="road road-sec" d="M150,0 L150,450"/>
+    <path class="road road-sec" d="M420,0 L420,450"/>
+    <path class="road road-sec" d="M680,0 L680,450"/>
+    <path class="road road-path" d="M200,120 Q250,170 300,170"/>
+    <path class="road road-path" d="M540,220 Q580,260 620,260"/>
+
+    <text class="map-label road-name" x="70" y="214">学府大道</text>
+    <text class="map-label road-name" x="70" y="114">文化北路</text>
+    <text class="map-label road-name" x="70" y="349">科技南路</text>
+
+    <!-- Markers -->
+    ${RESTS.map(r => {
+      const sch = SCHOOLS.find(s => s.id === r.school);
+      const vis = fIds.has(r.id);
+      const sel = state.selectedId === r.id;
+      const fav = state.favorites.has(r.id);
+      return `
+        <g class="marker-group" onclick="selectRest(${r.id})"
+           style="opacity:${vis ? 1 : 0.12}; pointer-events:${vis ? 'auto' : 'none'};">
+          <circle class="marker-ring" cx="${r.x}" cy="${r.y}" stroke="${sch.color}" opacity="${sel?1:0}"/>
+          <circle class="marker-core ${sel?'selected':''}" cx="${r.x}" cy="${r.y}" fill="${fav?'#FF2D55':sch.color}"/>
+          <text class="marker-name ${sel?'always-show':''}" x="${r.x}" y="${r.y - 18}">${r.emoji} ${r.name}</text>
+          ${fav ? `<text class="marker-fav" x="${r.x + 12}" y="${r.y - 4}">❤️</text>` : ''}
+        </g>
+      `;
+    }).join('')}
+  </svg>`;
+
+  document.getElementById('mapSvgWrap').innerHTML = svg;
+  applyMapTransform();
+}
+
+function showMapPopup(id) {
+  const r = RESTS.find(x => x.id === id);
+  if (!r) return;
+  const sch = SCHOOLS.find(s => s.id === r.school);
+  const isFav = state.favorites.has(r.id);
+  const dist = Math.round(Math.hypot(r.x - 400, r.y - 225) * 2.5);
+  const revCount = state.reviews.filter(rv => rv.restId === r.id).length;
+
+  const popup = document.getElementById('mapPopup');
+  popup.innerHTML = `
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <div class="popup-emoji">${r.emoji}</div>
+    <div class="popup-name">${r.name}</div>
+    <div class="popup-cuisine">${r.cuisine} · ${sch.name}附近</div>
+    <div class="popup-stats">
+      <div class="popup-stat"><div class="popup-stat-val">⭐${r.rating}</div><div class="popup-stat-label">评分</div></div>
+      <div class="popup-stat"><div class="popup-stat-val">¥${r.price}</div><div class="popup-stat-label">人均</div></div>
+      <div class="popup-stat"><div class="popup-stat-val">${dist}m</div><div class="popup-stat-label">距离</div></div>
+      <div class="popup-stat"><div class="popup-stat-val">${revCount}</div><div class="popup-stat-label">评价</div></div>
+    </div>
+    <div class="popup-desc">${r.desc}</div>
+    <div class="popup-tags">${r.tags.map(t=>`<span class="popup-tag">${t}</span>`).join('')}<span class="popup-tag">🕐 ${r.hours}</span></div>
+    <div class="popup-actions">
+      <button class="popup-action-btn popup-action-primary" onclick="goReview(${r.id})">查看评价 →</button>
+      <button class="popup-action-btn popup-action-secondary" onclick="toggleFav(${r.id});closePopup();">${isFav ? '取消收藏' : '❤️ 收藏'}</button>
+    </div>
+  `;
+  popup.classList.add('show');
+
+  // Position
+  const mapArea = document.getElementById('mapArea');
+  const rect = mapArea.getBoundingClientRect();
+  popup.style.top = '50%';
+  popup.style.left = '50%';
+  popup.style.transform = 'translate(-50%, -50%)';
+}
+
+function closePopup() { document.getElementById('mapPopup').classList.remove('show'); }
+
+function goReview(id) {
+  closePopup();
+  document.getElementById('reviewFilter').value = id;
+  switchView('review');
+  renderReviews();
+}
+
+// ============================================================
+// MAP INTERACTIONS (pan, zoom)
+// ============================================================
+function applyMapTransform() {
+  const wrap = document.getElementById('mapSvgWrap');
+  if (wrap) wrap.style.transform = `translate(${state.mapX}px, ${state.mapY}px) scale(${state.mapScale})`;
+}
+
+function zoomMap(dir) {
+  state.mapScale = Math.max(0.5, Math.min(3, state.mapScale + dir * 0.25));
+  applyMapTransform();
+}
+
+function resetMap() {
+  state.mapScale = 1; state.mapX = 0; state.mapY = 0;
+  applyMapTransform();
+}
+
+function mapWheel(e) {
+  e.preventDefault();
+  const dir = e.deltaY < 0 ? 1 : -1;
+  state.mapScale = Math.max(0.5, Math.min(3, state.mapScale + dir * 0.1));
+  applyMapTransform();
+}
+
+function mapDragStart(e) {
+  state.dragging = true;
+  const pt = e.touches ? e.touches[0] : e;
+  state.dragStartX = pt.clientX;
+  state.dragStartY = pt.clientY;
+  state.dragMapX = state.mapX;
+  state.dragMapY = state.mapY;
+}
+
+function mapDragMove(e) {
+  if (!state.dragging) return;
+  const pt = e.touches ? e.touches[0] : e;
+  state.mapX = state.dragMapX + (pt.clientX - state.dragStartX);
+  state.mapY = state.dragMapY + (pt.clientY - state.dragStartY);
+  const wrap = document.getElementById('mapSvgWrap');
+  if (wrap) wrap.style.transform = `translate(${state.mapX}px, ${state.mapY}px) scale(${state.mapScale})`;
+}
+
+function mapDragEnd() { state.dragging = false; }
+
+function mapTouchStart(e) { if (e.touches.length === 1) mapDragStart(e); }
+function mapTouchMove(e) { if (e.touches.length === 1) { e.preventDefault(); mapDragMove(e); } }
+
+// ============================================================
+// AI CHAT (LLM-powered)
+// ============================================================
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function sendQuick(text) {
+  document.getElementById('aiInput').value = text;
+  sendAiMsg();
+}
+
+// ============================================================
+// LOCAL NLU ENGINE — 关键词提取 + 意图识别 + 权重评分
+// ============================================================
+const NLU = {
+  // 意图-关键词映射表
+  intents: {
+    budget: {
+      '穷|省|便宜|实惠|没钱|穷鬼|经济|最便宜|学生价': { max: 20 },
+      '10块|十块|10元|十元': { max: 10 },
+      '15块|十五|15元': { max: 15 },
+      '20块|二十|20元|20以内|20以下': { max: 20 },
+      '25块|二十五|25元': { max: 25 },
+      '30块|三十|30元|30以内': { max: 30 },
+      '50块|五十|50元|50以内|50左右': { max: 55 },
+      '贵|奢侈|犒劳|豪华|高档|不差钱': { min: 40 },
+    },
+    taste: {
+      '辣|麻辣|川|湘|辣椒|火辣|重辣|微辣': ['川菜','湘菜','麻辣烫','火锅'],
+      '清淡|不辣|养生|健康|轻食|减脂|减肥|低卡|素|沙拉': ['素食','粤菜','面食'],
+      '甜|奶茶|甜品|冰|饮料|解渴|甜食': ['奶茶甜品'],
+      '鲜|海鲜|日料|日式|刺身|寿司|拉面': ['日料'],
+      '韩|韩式|韩国|烤肉|石锅|拌饭|部队锅|年糕': ['韩餐'],
+      '烤|撸串|烧烤|BBQ|串': ['烧烤'],
+      '火锅|涮|锅底': ['火锅'],
+      '面|拉面|米线|粉|牛肉面|米粉': ['面食'],
+      '西餐|牛排|意面|西式|披萨|汉堡': ['西餐','快餐'],
+      '东北|铁锅|炖|锅包肉|饺子': ['东北菜'],
+      '粤|广东|茶餐厅|早茶|肠粉|虾饺': ['粤菜'],
+      '快餐|随便|凑合|麦当劳|肯德基|沙县': ['快餐'],
+      '麻辣烫|冒菜|自选': ['麻辣烫'],
+      '清真|牛肉|回|穆斯林|大盘鸡': ['清真'],
+    },
+    scene: {
+      '聚餐|一群|好多人|团建|部门|集体|同学|室友|宿舍.*人|几个人': 'group',
+      '约会|女朋友|男朋友|对象|浪漫|情调|二人|两个人|恋人|情侣': 'date',
+      '一个人|独食|自己|solo|单人|孤独|我自己': 'solo',
+      '快|赶时间|来不及|课间|匆忙|速度|马上|外卖|打包|快速': 'fast',
+      '夜宵|宵夜|深夜|晚上|凌晨|半夜|复习完|熬夜|夜晚|加班': 'late',
+      '早餐|早上|早饭|早点|上午': 'breakfast',
+    },
+    people: {
+      '两个|2个|两人|二人|双人': 2,
+      '三个|3个|三人': 3,
+      '四个|4个|四人|宿舍': 4,
+      '五六|5.6|五个|六个|一群': 6,
+    },
+    mood: {
+      '累|疲惫|辛苦|崩溃|期末|考完|终于|犒劳|奖励': 'tired',
+      '开心|庆祝|高兴|过生日|生日|好事|升学|offer': 'happy',
+      '伤心|难过|失恋|郁闷|不开心|心情不好|烦|emo': 'sad',
+      '饿|饥|没吃|肚子|饿死|好饿|饿了|快饿死': 'hungry',
+      '纠结|不知道|选择困难|随便|都行|无所谓': 'indecisive',
+    },
+  },
+
+  // 从自然语言提取用户意图
+  parse(text) {
+    const result = {
+      budgetMax: null,
+      budgetMin: null,
+      cuisines: [],
+      scene: null,
+      people: 1,
+      mood: null,
+      raw: text,
+    };
+
+    // Budget
+    for (const [pattern, val] of Object.entries(this.intents.budget)) {
+      if (new RegExp(pattern).test(text)) {
+        if (val.max && (!result.budgetMax || val.max < result.budgetMax)) result.budgetMax = val.max;
+        if (val.min) result.budgetMin = val.min;
+      }
+    }
+
+    // Taste → cuisines
+    for (const [pattern, cuisines] of Object.entries(this.intents.taste)) {
+      if (new RegExp(pattern).test(text)) {
+        cuisines.forEach(c => { if (!result.cuisines.includes(c)) result.cuisines.push(c); });
+      }
+    }
+
+    // Scene
+    for (const [pattern, scene] of Object.entries(this.intents.scene)) {
+      if (new RegExp(pattern).test(text)) { result.scene = scene; break; }
+    }
+
+    // People
+    for (const [pattern, num] of Object.entries(this.intents.people)) {
+      if (new RegExp(pattern).test(text)) { result.people = num; break; }
+    }
+
+    // Mood
+    for (const [pattern, mood] of Object.entries(this.intents.mood)) {
+      if (new RegExp(pattern).test(text)) { result.mood = mood; break; }
+    }
+
+    return result;
+  },
+
+  // 对每家餐厅算匹配得分
+  score(rest, intent) {
+    let score = 0;
+    let reasons = [];
+
+    // Base score from rating
+    score += rest.rating * 5;
+
+    // Budget match (most important)
+    if (intent.budgetMax) {
+      if (rest.price <= intent.budgetMax) {
+        score += 30;
+        const saved = intent.budgetMax - rest.price;
+        if (saved >= 5) reasons.push(`人均¥${rest.price}，在你¥${intent.budgetMax}的预算内还能省`);
+        else reasons.push(`人均¥${rest.price}，刚好在预算内`);
+      } else {
+        score -= 40; // penalty
+      }
+    }
+    if (intent.budgetMin && rest.price >= intent.budgetMin) {
+      score += 20;
+      reasons.push('品质感不错，适合犒劳自己');
+    }
+
+    // Cuisine match
+    if (intent.cuisines.length > 0) {
+      if (intent.cuisines.includes(rest.cuisine)) {
+        score += 35;
+        reasons.push(`正好是你想吃的${rest.cuisine}`);
+      }
+    }
+
+    // Scene match
+    if (intent.scene === 'group') {
+      if (rest.tags.some(t => /聚餐|量大|量巨/.test(t)) || rest.price >= 25) {
+        score += 25;
+        reasons.push('很适合多人聚餐');
+      }
+      if (rest.cuisine === '火锅' || rest.cuisine === '烧烤' || rest.cuisine === '东北菜') {
+        score += 15;
+        reasons.push('氛围感拉满，大家一起吃更带劲');
+      }
+    } else if (intent.scene === 'date') {
+      if (rest.tags.some(t => /约会|情调|精致|颜值/.test(t)) || ['西餐','日料'].includes(rest.cuisine)) {
+        score += 30;
+        reasons.push('环境有氛围，很适合约会');
+      }
+    } else if (intent.scene === 'fast') {
+      if (rest.tags.some(t => /速度|出餐|快/.test(t)) || rest.price <= 20 || rest.cuisine === '快餐') {
+        score += 25;
+        reasons.push('出餐快，不用等太久');
+      }
+    } else if (intent.scene === 'late') {
+      if (rest.tags.some(t => /深夜|24小时|露天/.test(t)) || rest.hours.includes('02') || rest.hours.includes('03') || rest.hours.includes('06') || rest.hours === '24小时' || rest.cuisine === '烧烤') {
+        score += 30;
+        reasons.push('深夜还在营业，夜猫子福音');
+      }
+    } else if (intent.scene === 'breakfast') {
+      if (rest.tags.some(t => /早餐/.test(t)) || rest.hours.startsWith('6') || rest.hours.startsWith('7') || rest.hours.startsWith('8')) {
+        score += 25;
+        reasons.push('早上就开门，适合吃早餐');
+      }
+    } else if (intent.scene === 'solo') {
+      if (rest.price <= 30) {
+        score += 15;
+        reasons.push('一个人来也很自在，没有压力');
+      }
+    }
+
+    // Mood bonuses
+    if (intent.mood === 'tired' || intent.mood === 'sad') {
+      if (rest.tags.some(t => /治愈|汤/.test(t)) || ['日料','火锅','面食'].includes(rest.cuisine)) {
+        score += 10;
+        reasons.push('暖胃又治愈，吃完心情会好的');
+      }
+    } else if (intent.mood === 'happy') {
+      if (rest.price >= 30 || rest.cuisine === '火锅' || rest.cuisine === '烧烤') {
+        score += 10;
+        reasons.push('适合庆祝！好好犒劳自己');
+      }
+    } else if (intent.mood === 'hungry') {
+      if (rest.tags.some(t => /量大|量巨|管饱|实惠/.test(t))) {
+        score += 20;
+        reasons.push('分量十足，保证吃饱');
+      }
+    }
+
+    // Review score bonus
+    const revCount = state.reviews.filter(rv => rv.restId === rest.id).length;
+    if (revCount > 0) {
+      score += revCount * 3;
+      reasons.push(`${revCount}条同学评价，口碑不错`);
+    }
+
+    // Favorite bonus (if faved, user likes it)
+    if (state.favorites.has(rest.id)) {
+      score += 5;
+    }
+
+    // Pick best 2 reasons
+    if (reasons.length === 0) reasons.push(`评分${rest.rating}，${rest.tags[0]}`);
+
+    return { score, reasons: reasons.slice(0, 2) };
+  },
+
+  // 生成个性化问候语
+  greeting(intent) {
+    if (intent.mood === 'tired') {
+      const g = ['辛苦了！考完试/忙完了就该好好吃一顿 💪','累了一天，来顿好吃的充充电吧 ⚡','辛苦啦！美食是最好的回血方式 🫶'];
+      return g[Math.floor(Math.random() * g.length)];
+    }
+    if (intent.mood === 'happy') return '恭喜恭喜！开心的日子当然要配好吃的 🎉';
+    if (intent.mood === 'sad') return '没事的！好吃的东西有治愈的力量，来看看这几家 🤗';
+    if (intent.mood === 'hungry') return '饿了就别犹豫了！给你找了几家马上能吃到的 🏃‍♂️';
+    if (intent.mood === 'indecisive') return '选择困难症我来治！根据你的描述帮你挑好了 😎';
+    if (intent.scene === 'late') return '夜猫子你好！深夜觅食我最在行了 🌙';
+    if (intent.scene === 'date') return '约会选餐厅最重要了！帮你挑了几家有氛围的 💕';
+    if (intent.scene === 'group') return '聚餐嘛，量大实惠氛围好最重要！看看这几家 🎊';
+    if (intent.budgetMax && intent.budgetMax <= 20) return '穷学生我懂！便宜又好吃的都在这了 💰';
+    return '收到！根据你的描述，我觉得这几家最适合你 👇';
+  },
+
+  // 主推荐函数
+  recommend(text) {
+    const intent = this.parse(text);
+    const scored = RESTS.map(r => ({ ...r, ...this.score(r, intent) }));
+    scored.sort((a, b) => b.score - a.score);
+    const top = scored.slice(0, 3).filter(r => r.score > 0);
+    return {
+      greeting: this.greeting(intent),
+      intent,
+      results: top,
+    };
+  }
+};
+
+function sendAiMsg() {
+  const input = document.getElementById('aiInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+
+  // Add user message
+  addChatMsg('user', text);
+
+  // Hide quick prompts
+  document.getElementById('quickPrompts').style.display = 'none';
+
+  // Show typing for realism
+  const typingId = addTyping();
+
+  // Simulate small delay for natural feel
+  setTimeout(() => {
+    removeTyping(typingId);
+
+    const { greeting, intent, results } = NLU.recommend(text);
+
+    // Build debug info (hidden, shows intent parsing)
+    const intentDebug = [];
+    if (intent.budgetMax) intentDebug.push(`预算≤¥${intent.budgetMax}`);
+    if (intent.budgetMin) intentDebug.push(`预算≥¥${intent.budgetMin}`);
+    if (intent.cuisines.length) intentDebug.push(`口味: ${intent.cuisines.join('/')}`);
+    if (intent.scene) intentDebug.push(`场景: ${intent.scene}`);
+    if (intent.mood) intentDebug.push(`心情: ${intent.mood}`);
+    const debugStr = intentDebug.length ? `<div style="font-size:11px;color:var(--text-light);margin-top:6px;padding:6px 10px;background:var(--surface-alt);border-radius:6px;font-family:monospace;">🧠 理解: ${intentDebug.join(' · ')}</div>` : '';
+
+    let html = greeting + debugStr + '<br>';
+
+    if (results.length === 0) {
+      html += '嗯…没有找到特别匹配的，要不换个描述试试？或者直接用下面的筛选功能 👇';
+    } else {
+      html += results.map(r => {
+        const sch = SCHOOLS.find(s => s.id === r.school);
+        const isFav = state.favorites.has(r.id);
+        const reasonText = r.reasons.join('，');
+        return `
+          <div class="ai-rec-card">
+            <div class="ai-rec-header">
+              <div class="ai-rec-emoji">${r.emoji}</div>
+              <div style="flex:1; min-width:0;">
+                <div class="ai-rec-name">${r.name}</div>
+                <div class="ai-rec-meta">${r.cuisine} · ¥${r.price}/人 · ⭐${r.rating} · ${sch.name}</div>
+              </div>
+              <span class="popup-tag ai-fav-btn ${isFav ? 'ai-fav-active' : ''}" data-rid="${r.id}" style="cursor:pointer;flex-shrink:0;margin-left:8px;" onclick="event.stopPropagation();toggleFav(${r.id});">${isFav ? '❤️ 已收藏' : '🤍 收藏'}</span>
+            </div>
+            <div class="ai-rec-reason">💡 ${reasonText}</div>
+            <div class="ai-rec-tags">
+              ${r.tags.map(t => `<span class="popup-tag">${t}</span>`).join('')}
+              <span class="popup-tag" style="cursor:pointer;" onclick="selectRest(${r.id});switchView('map');">📍 在地图中查看</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    addChatMsg('ai', html);
+
+  }, 600 + Math.random() * 400); // 0.6-1s delay
+}
+
+function addChatMsg(role, html) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  div.innerHTML = `<div class="chat-bubble">${html}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function addTyping() {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  const id = 'typing-' + Date.now();
+  div.id = id;
+  div.className = 'chat-msg ai';
+  div.innerHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+// ============================================================
+// TRADITIONAL RECOMMEND
+// ============================================================
+function renderPrefForm() {
+  document.getElementById('prefTastes').innerHTML = TASTES.map(t =>
+    `<div class="pref-chip" onclick="togPref('prefTastes','${t}',this)">${t}</div>`
+  ).join('');
+  document.getElementById('prefBudgets').innerHTML = BUDGET_OPTS.map(b =>
+    `<div class="pref-chip" onclick="selPref('prefBudget','${b}',this,'#prefBudgets')">${b}</div>`
+  ).join('');
+  document.getElementById('prefScenes').innerHTML = SCENES.map(s =>
+    `<div class="scene-item" onclick="selPref('prefScene','${s.label}',this,'#prefScenes')">
+      <div class="scene-icon">${s.icon}</div>
+      <div class="scene-label">${s.label}</div>
+    </div>`
+  ).join('');
+}
+
+function togPref(key, val, el) {
+  if (state[key].has(val)) { state[key].delete(val); el.classList.remove('active'); }
+  else { state[key].add(val); el.classList.add('active'); }
+}
+
+function selPref(key, val, el, parentSel) {
+  document.querySelectorAll(parentSel + ' > *').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  state[key] = val;
+}
+
+function generateRec() {
+  let pool = [...RESTS];
+
+  if (state.prefBudget === '10元以内') pool = pool.filter(r => r.price <= 10);
+  else if (state.prefBudget === '10-25元') pool = pool.filter(r => r.price <= 25);
+  else if (state.prefBudget === '25-50元') pool = pool.filter(r => r.price <= 50);
+  else if (state.prefBudget === '50元以上') pool = pool.filter(r => r.price >= 50);
+
+  if (state.prefScene === '聚餐') pool = pool.filter(r => r.price >= 25 || r.tags.some(t => /聚餐|量大|量巨/.test(t)));
+  else if (state.prefScene === '约会') pool = pool.filter(r => r.tags.some(t => /约会|精致|情调|颜值/.test(t)) || ['西餐','日料'].includes(r.cuisine));
+  else if (state.prefScene === '快速') pool = pool.filter(r => r.price <= 25 || r.tags.some(t => /速度|出餐/.test(t)));
+  else if (state.prefScene === '宵夜') pool = pool.filter(r => r.tags.some(t => /深夜|24小时|露天/.test(t)) || r.cuisine === '烧烤');
+
+  const tasteMap = {
+    '辣🌶️':['川菜','湘菜','麻辣烫','火锅'],
+    '清淡🥬':['粤菜','素食','面食'],
+    '甜🍰':['奶茶甜品'],
+    '咸香🧂':['东北菜','烧烤','快餐'],
+    '酸爽🍋':['面食'],
+    '鲜🍲':['日料','粤菜','火锅'],
+    '重口🔥':['川菜','湘菜','火锅','烧烤','麻辣烫'],
+    '家常🏠':['东北菜','快餐','面食','清真'],
+  };
+
+  pool.forEach(r => {
+    r._score = r.rating * 10;
+    state.prefTastes.forEach(t => { if (tasteMap[t]?.includes(r.cuisine)) r._score += 20; });
+  });
+
+  pool.sort((a,b) => b._score - a._score);
+  const top = pool.slice(0, 3);
+
+  if (!top.length) { showToast('没有匹配的餐厅，试试调整条件~'); return; }
+
+  const reasons = ['口味偏好+评分综合最佳匹配，强烈推荐！','符合预算和场景，品质稳定好评高','特色鲜明，值得尝试的好选择'];
+
+  document.getElementById('tradResults').innerHTML = top.map((r, i) => {
+    const sch = SCHOOLS.find(s => s.id === r.school);
+    return `
+      <div class="trad-card">
+        <div class="trad-rank rank-${i+1}">#${i+1}</div>
+        <div class="trad-emoji">${r.emoji}</div>
+        <div class="trad-info">
+          <div class="trad-name">${r.name}</div>
+          <div class="trad-meta">${r.cuisine} · ${sch.name} · ¥${r.price}/人</div>
+          <div class="trad-reason">💡 ${reasons[i]}</div>
+          <div class="trad-stats">
+            <span>⭐ ${r.rating}</span>
+            <span>🏷️ ${r.tags.join(' · ')}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// SPINNER
+// ============================================================
+function drawWheel() {
+  const canvas = document.getElementById('spinCanvas');
+  const ctx = canvas.getContext('2d');
+  const cx = 150, cy = 150, R = 148;
+  const items = RESTS.slice(0, 10);
+  const N = items.length;
+  const slice = (2 * Math.PI) / N;
+  const colors = ['#FF6B35','#2EC4B6','#FFD166','#7B61FF','#E5533D','#4A90D9','#45B69C','#FF8A5C','#A78BFA','#F472B6'];
+
+  ctx.clearRect(0, 0, 300, 300);
+
+  items.forEach((r, i) => {
+    const a0 = i * slice - Math.PI / 2;
+    const a1 = a0 + slice;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R, a0, a1);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(a0 + slice / 2);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 13px Noto Sans SC';
+    ctx.textAlign = 'center';
+    ctx.fillText(r.emoji, R * 0.58, -2);
+    ctx.font = '10px Noto Sans SC';
+    const nm = r.name.length > 4 ? r.name.slice(0, 4) + '..' : r.name;
+    ctx.fillText(nm, R * 0.58, 12);
+    ctx.restore();
+  });
+}
+
+function doSpin() {
+  if (state.spinning) return;
+  state.spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('spinResult').classList.remove('show');
+
+  const canvas = document.getElementById('spinCanvas');
+  const items = RESTS.slice(0, 10);
+  const N = items.length;
+  const slice = 360 / N;
+  const idx = Math.floor(Math.random() * N);
+  const extra = 5 + Math.floor(Math.random() * 3);
+  const target = extra * 360 + (360 - idx * slice - slice / 2);
+  state.spinAngle += target;
+
+  canvas.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+  canvas.style.transform = `rotate(${state.spinAngle}deg)`;
+
+  setTimeout(() => {
+    state.spinning = false;
+    state.lastSpinResult = items[idx];
+    document.getElementById('spinBtn').disabled = false;
+    const r = items[idx];
+    const sch = SCHOOLS.find(s => s.id === r.school);
+    document.getElementById('spinEmoji').textContent = r.emoji;
+    document.getElementById('spinName').textContent = r.name;
+    document.getElementById('spinMeta').textContent = `${r.cuisine} · ${sch.name} · ¥${r.price}/人 · ⭐${r.rating}`;
+    document.getElementById('spinDesc').textContent = r.desc;
+    document.getElementById('spinResult').classList.add('show');
+  }, 4200);
+}
+
+function favFromSpin() {
+  if (state.lastSpinResult) {
+    toggleFav(state.lastSpinResult.id);
+    showToast('已收藏 ' + state.lastSpinResult.emoji + ' ' + state.lastSpinResult.name);
+  }
+}
+
+// ============================================================
+// REVIEWS
+// ============================================================
+function renderStarInput() {
+  document.getElementById('starInput').innerHTML = [1,2,3,4,5].map(i =>
+    `<button class="star-btn" onclick="setWriteRating(${i})">⭐</button>`
+  ).join('');
+}
+
+function setWriteRating(n) {
+  state.writeRating = n;
+  document.querySelectorAll('.star-btn').forEach((b, i) => b.classList.toggle('lit', i < n));
+}
+
+function renderWriteTags() {
+  document.getElementById('writeTags').innerHTML = REVIEW_TAGS.map(t =>
+    `<button class="write-tag" onclick="togWriteTag('${t}',this)">${t}</button>`
+  ).join('');
+}
+
+function togWriteTag(t, el) {
+  if (state.writeTags.has(t)) { state.writeTags.delete(t); el.classList.remove('active'); }
+  else { state.writeTags.add(t); el.classList.add('active'); }
+}
+
+function renderReviewSelects() {
+  const opts = RESTS.map(r => `<option value="${r.id}">${r.emoji} ${r.name}</option>`).join('');
+  document.getElementById('reviewFilter').innerHTML = '<option value="">全部餐厅</option>' + opts;
+  document.getElementById('writeRestSel').innerHTML = '<option value="">选择餐厅</option>' + opts;
+}
+
+function renderReviews() {
+  const filter = document.getElementById('reviewFilter').value;
+  let data = [...state.reviews];
+  if (filter) data = data.filter(r => r.restId == filter);
+  data.sort((a,b) => b.likes - a.likes);
+
+  document.getElementById('reviewsFeed').innerHTML = data.map(r => {
+    const rest = RESTS.find(x => x.id === r.restId);
+    return `
+      <div class="review-card">
+        <div class="review-card-header">
+          <div class="reviewer">
+            <div class="reviewer-ava" style="background:${r.color}">${r.avatar}</div>
+            <div>
+              <div class="reviewer-name">${r.user}</div>
+              <div class="reviewer-school">${r.school}</div>
+            </div>
+          </div>
+          <div class="review-rest-label">${rest ? rest.emoji + ' ' + rest.name : ''}</div>
+        </div>
+        <div class="review-stars">${'⭐'.repeat(r.rating)}</div>
+        <div class="review-text">${r.text}</div>
+        <div class="review-card-tags">${r.tags.map(t => `<span class="rv-tag">${t}</span>`).join('')}</div>
+        <div class="review-card-footer">
+          <button class="like-btn" onclick="likeReview(${r.id}, this)">👍 <span>${r.likes}</span> 有用</button>
+          <span>${r.time}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function likeReview(id, el) {
+  const r = state.reviews.find(x => x.id === id);
+  if (r) { r.likes++; el.querySelector('span').textContent = r.likes; }
+}
+
+function postReview() {
+  const restId = document.getElementById('writeRestSel').value;
+  const text = document.getElementById('writeText').value.trim();
+  if (!restId) { showToast('请先选择餐厅'); return; }
+  if (!state.writeRating) { showToast('请给个评分~'); return; }
+  if (!text) { showToast('写几句评价吧~'); return; }
+
+  const avs = ['😎','🤓','😋','🧑‍💻','👩‍🎓','🤠','🥳','😺'];
+  const sch = SCHOOLS[Math.floor(Math.random() * SCHOOLS.length)];
+
+  state.reviews.unshift({
+    id: Date.now(),
+    restId: +restId,
+    user: '匿名同学',
+    school: sch.name,
+    avatar: avs[Math.floor(Math.random() * avs.length)],
+    color: sch.color,
+    rating: state.writeRating,
+    text,
+    tags: [...state.writeTags],
+    time: '刚刚',
+    likes: 0,
+  });
+
+  document.getElementById('writeText').value = '';
+  state.writeRating = 0;
+  state.writeTags.clear();
+  renderStarInput();
+  renderWriteTags();
+  renderReviews();
+  showToast('评价发布成功 🎉');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// START
+// ============================================================
+init();
+</script>
+</body>
+</html>
