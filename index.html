@@ -362,6 +362,32 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointe
   .map-leg{padding:5px 10px;gap:8px;font-size:9px;bottom:8px;left:8px;flex-wrap:wrap}
 }
 
+/* ===== LANDING ===== */
+.landing{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9000;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 24px;transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.landing.hide{opacity:0;transform:scale(1.03);pointer-events:none}
+.land-bg{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;z-index:0}
+.land-bg::before{content:'';position:absolute;top:-40%;right:-20%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(244,81,30,0.07) 0%,transparent 70%);animation:landFloat 8s ease-in-out infinite}
+.land-bg::after{content:'';position:absolute;bottom:-30%;left:-15%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,191,165,0.06) 0%,transparent 70%);animation:landFloat 8s ease-in-out infinite reverse}
+@keyframes landFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}}
+.land-content{position:relative;z-index:1;max-width:480px}
+.land-logo{width:72px;height:72px;background:var(--primary);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:0 8px 32px rgba(244,81,30,0.25);animation:landPop .6s var(--bounce) .2s both}
+.land-logo svg{width:36px;height:36px}
+@keyframes landPop{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}
+.land-title{font-family:'ZCOOL KuaiLe',cursive;font-size:42px;color:var(--text);margin-bottom:4px;animation:landUp .5s var(--ease) .35s both;letter-spacing:1px}
+.land-title span{color:var(--primary)}
+@keyframes landUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.land-sub{font-size:15px;color:var(--text-sec);margin-bottom:32px;line-height:1.7;animation:landUp .5s var(--ease) .45s both}
+.land-stats{display:flex;justify-content:center;gap:28px;margin-bottom:36px;animation:landUp .5s var(--ease) .55s both}
+.land-stat{text-align:center}
+.land-stat-v{font-size:28px;font-weight:900;color:var(--primary);font-family:'DM Sans',sans-serif}
+.land-stat-l{font-size:11px;color:var(--text-dim);margin-top:2px;font-weight:500}
+.land-features{display:flex;justify-content:center;gap:12px;margin-bottom:36px;flex-wrap:wrap;animation:landUp .5s var(--ease) .65s both}
+.land-feat{padding:6px 14px;background:var(--surface-alt);border-radius:20px;font-size:12px;color:var(--text-sec);font-weight:500;border:1px solid var(--border-lt)}
+.land-go{padding:16px 48px;background:var(--primary);color:#fff;border:none;border-radius:30px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s;box-shadow:0 6px 24px rgba(244,81,30,0.25);animation:landUp .5s var(--ease) .75s both;letter-spacing:.5px}
+.land-go:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(244,81,30,0.3)}
+.land-skip{margin-top:16px;font-size:12px;color:var(--text-dim);cursor:pointer;border:none;background:none;font-family:inherit;animation:landUp .5s var(--ease) .85s both;transition:color .2s}
+.land-skip:hover{color:var(--text-sec)}
+
 /* ===== TOAST ===== */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:#fff;padding:11px 22px;border-radius:24px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s var(--ease);box-shadow:var(--shadow-lg);white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
@@ -369,7 +395,33 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointe
 </head>
 <body>
 
-<header class="header">
+<!-- Landing -->
+<div class="landing" id="landing">
+  <div class="land-bg"></div>
+  <div class="land-content">
+    <div class="land-logo"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6 2 10.5c0 2.5 1.5 4.5 3 6L12 22l7-5.5c1.5-1.5 3-3.5 3-6C22 6 17.52 2 12 2z"/><circle cx="8.5" cy="10" r="1.5" fill="white"/><circle cx="15.5" cy="10" r="1.5" fill="white"/><path d="M9 14.5c.83.83 2.17 1.5 3 1.5s2.17-.67 3-1.5"/></svg></div>
+    <div class="land-title">食探<span>.</span></div>
+    <div class="land-sub">5 所高校 · 20 万学生 · 1 个「吃什么」的终极答案<br>告别选择困难，发现大学城周边的宝藏餐厅</div>
+    <div class="land-stats">
+      <div class="land-stat"><div class="land-stat-v">20</div><div class="land-stat-l">精选餐厅</div></div>
+      <div class="land-stat"><div class="land-stat-v">5</div><div class="land-stat-l">覆盖高校</div></div>
+      <div class="land-stat"><div class="land-stat-v">15</div><div class="land-stat-l">菜系分类</div></div>
+      <div class="land-stat"><div class="land-stat-v">AI</div><div class="land-stat-l">智能推荐</div></div>
+    </div>
+    <div class="land-features">
+      <span class="land-feat">🗺️ 地图探索</span>
+      <span class="land-feat">🤖 NLU 智能推荐</span>
+      <span class="land-feat">🎰 随机选餐</span>
+      <span class="land-feat">💬 学生评价</span>
+      <span class="land-feat">❤️ 收藏管理</span>
+      <span class="land-feat">🔍 搜索筛选</span>
+    </div>
+    <button class="land-go" onclick="enterApp()">开始探索 →</button>
+    <button class="land-skip" onclick="enterApp()">跳过引导</button>
+  </div>
+</div>
+
+<header class="header" id="appHeader" style="display:none">
   <div class="header-in">
     <div class="logo"><div class="logo-ic"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6 2 10.5c0 2.5 1.5 4.5 3 6L12 22l7-5.5c1.5-1.5 3-3.5 3-6C22 6 17.52 2 12 2z"/><circle cx="8.5" cy="10" r="1.5" fill="white"/><circle cx="15.5" cy="10" r="1.5" fill="white"/><path d="M9 14.5c.83.83 2.17 1.5 3 1.5s2.17-.67 3-1.5"/></svg></div><span class="logo-t">食探<span class="logo-dot">.</span></span></div>
     <nav class="nav" id="nav">
@@ -383,7 +435,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointe
   </div>
 </header>
 
-<div class="main">
+<div class="main" id="appMain" style="display:none">
 
 <!-- ===== MAP ===== -->
 <div id="v-map" class="view on">
@@ -532,7 +584,7 @@ body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointe
 </div>
 
 <!-- Mobile bottom nav -->
-<nav class="mob-nav" id="mobNav">
+<nav class="mob-nav" id="mobNav" style="display:none">
   <div class="mob-nav-in">
     <button class="mob-tab on" onclick="goMob('map',this)"><span class="mob-tab-ic">🗺️</span><span class="mob-tab-lb">探索</span></button>
     <button class="mob-tab" onclick="goMob('ai',this)"><span class="mob-tab-ic">🤖</span><span class="mob-tab-lb">推荐</span></button>
@@ -608,6 +660,15 @@ let S={
 // ============================================================
 // INIT
 // ============================================================
+function enterApp(){
+  const land=document.getElementById('landing');
+  land.classList.add('hide');
+  document.getElementById('appHeader').style.display='';
+  document.getElementById('appMain').style.display='';
+  document.getElementById('mobNav').removeAttribute('style');
+  setTimeout(()=>land.remove(),600);
+}
+
 function init(){
   renderCui();renderSch();renderRList();renderMap();
   renderPForm();renderStars();renderWTags();renderRvSels();renderRv();
